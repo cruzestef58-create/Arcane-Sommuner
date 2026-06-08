@@ -38,40 +38,54 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .home-header{max-width:1100px;margin:0 auto 24px;display:flex;align-items:center;justify-content:space-between;}
 .home-header h2{font-size:1.4rem;font-weight:900;}
 .home-header span{color:var(--text2);font-size:0.9rem;}
-.chest-grid{display:flex;flex-wrap:wrap;gap:24px;max-width:1100px;margin:0 auto;justify-content:center;}
+.chest-grid{display:flex;flex-wrap:wrap;gap:16px;max-width:1100px;margin:0 auto;justify-content:center;}
 
 /* CHEST CARD (home) */
 .chest-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:20px;
-  padding:24px 20px;width:190px;text-align:center;cursor:pointer;
-  transition:transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;
+  background:var(--surface);border:2px solid var(--border);border-radius:20px;
+  padding:18px 14px 14px;width:160px;text-align:center;
+  transition:transform 0.18s,box-shadow 0.18s;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
 }
-.chest-card:hover{transform:translateY(-6px);}
-.chest-card.starter{border-color:rgba(156,163,175,0.4);}
-.chest-card.starter:hover{box-shadow:0 12px 40px rgba(156,163,175,0.25);}
-.chest-card.mystic{border-color:rgba(59,130,246,0.5);}
-.chest-card.mystic:hover{box-shadow:0 12px 40px rgba(59,130,246,0.3);}
-.chest-card.epic-box{border-color:rgba(168,85,247,0.5);}
-.chest-card.epic-box:hover{box-shadow:0 12px 40px rgba(168,85,247,0.3);}
-.chest-card.legendary{border-color:rgba(245,158,11,0.5);}
-.chest-card.legendary:hover{box-shadow:0 12px 40px rgba(245,158,11,0.35);}
+.chest-card:hover{transform:translateY(-4px);}
+.chest-card.starter{border-color:rgba(156,163,175,0.5);}
+.chest-card.starter:hover{box-shadow:0 10px 30px rgba(156,163,175,0.2);}
+.chest-card.mystic{border-color:rgba(59,130,246,0.6);}
+.chest-card.mystic:hover{box-shadow:0 10px 30px rgba(59,130,246,0.3);}
+.chest-card.epic-box{border-color:rgba(168,85,247,0.6);}
+.chest-card.epic-box:hover{box-shadow:0 10px 30px rgba(168,85,247,0.3);}
+.chest-card.legendary{border-color:rgba(245,158,11,0.6);}
+.chest-card.legendary:hover{box-shadow:0 10px 30px rgba(245,158,11,0.35);}
+.chest-card.scroll{border-color:rgba(236,72,153,0.6);}
+.chest-card.scroll:hover{box-shadow:0 10px 30px rgba(236,72,153,0.3);}
+.chest-card.cosmic-box{border-color:rgba(167,139,250,0.7);}
+.chest-card.cosmic-box:hover{box-shadow:0 10px 30px rgba(167,139,250,0.4);}
 
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.chest-img-wrap{width:130px;height:130px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;}
-.chest-img-wrap img{width:120px;height:120px;object-fit:contain;
-  animation:float 3s ease-in-out infinite;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.5));}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.chest-img-wrap{width:100px;height:100px;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.chest-img-wrap img{width:90px;height:90px;object-fit:contain;
+  animation:float 3s ease-in-out infinite;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.5));}
 .chest-card.mystic .chest-img-wrap img{filter:drop-shadow(0 0 12px rgba(59,130,246,0.6));}
 .chest-card.epic-box .chest-img-wrap img{filter:drop-shadow(0 0 14px rgba(168,85,247,0.7));}
 .chest-card.legendary .chest-img-wrap img{filter:drop-shadow(0 0 18px rgba(245,158,11,0.8));}
-.chest-name{font-size:1rem;font-weight:800;margin-bottom:8px;}
-.chest-open-btn{width:100%;padding:10px;border:none;border-radius:10px;font-size:0.9rem;
-  font-weight:700;cursor:pointer;transition:filter 0.2s,transform 0.1s;margin-top:8px;}
-.chest-open-btn:hover{filter:brightness(1.15);}
-.chest-open-btn:active{transform:scale(0.97);}
-.chest-card.starter .chest-open-btn{background:linear-gradient(135deg,#374151,#6b7280);color:white;}
-.chest-card.mystic .chest-open-btn{background:linear-gradient(135deg,#1e3a5f,#3b82f6);color:white;}
-.chest-card.epic-box .chest-open-btn{background:linear-gradient(135deg,#6d28d9,#a855f7);color:white;}
-.chest-card.legendary .chest-open-btn{background:linear-gradient(135deg,#b45309,#f59e0b);color:white;}
+.chest-card.scroll .chest-img-wrap img{filter:drop-shadow(0 0 14px rgba(236,72,153,0.7));}
+.chest-card.cosmic-box .chest-img-wrap img{filter:drop-shadow(0 0 20px rgba(167,139,250,0.9));}
+.chest-name{font-size:0.82rem;font-weight:800;color:var(--text1);letter-spacing:0.3px;line-height:1.2;}
+.chest-btn-group{display:flex;flex-direction:column;gap:6px;width:100%;margin-top:4px;}
+.chest-open-btn{width:100%;padding:10px 8px;border:none;border-radius:12px;font-size:0.82rem;
+  font-weight:800;cursor:pointer;transition:filter 0.15s,transform 0.1s,box-shadow 0.15s;
+  letter-spacing:0.3px;}
+.chest-open-btn:hover{filter:brightness(1.2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,0.3);}
+.chest-open-btn:active{transform:scale(0.96);}
+.chest-open-btn.btn-x1{background:rgba(255,255,255,0.08);color:#e2e8f0;border:1px solid rgba(255,255,255,0.15);}
+.chest-open-btn.btn-x3{color:#fff;}
+.chest-card.starter .btn-x3{background:linear-gradient(135deg,#374151,#6b7280);}
+.chest-card.mystic .btn-x3{background:linear-gradient(135deg,#1e3a5f,#3b82f6);}
+.chest-card.epic-box .btn-x3{background:linear-gradient(135deg,#6d28d9,#a855f7);}
+.chest-card.legendary .btn-x3{background:linear-gradient(135deg,#b45309,#f59e0b);}
+.chest-card.scroll .btn-x3{background:linear-gradient(135deg,#9d174d,#ec4899);}
+.chest-card.cosmic-box .btn-x3{background:linear-gradient(135deg,#4c1d95,#a78bfa);}
+.chest-card.equip-home .btn-x3{background:linear-gradient(135deg,#065f46,#10b981);}
 
 /* Empty state */
 .empty-home{text-align:center;padding:60px 20px;color:var(--text2);}
@@ -579,9 +593,9 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .btn-eq-ok{padding:12px 36px;background:linear-gradient(135deg,#065f46,#10b981);color:#fff;font-weight:900;font-size:1rem;border:none;border-radius:12px;cursor:pointer;}
 
 
-.chest-card.equip-home{border-color:rgba(16,185,129,0.4);}
+.chest-card.equip-home{border-color:rgba(16,185,129,0.5);}
+.chest-card.equip-home:hover{box-shadow:0 10px 30px rgba(16,185,129,0.3);}
 .chest-card.equip-home .chest-img-wrap img{filter:drop-shadow(0 0 12px rgba(16,185,129,0.6));}
-.chest-card.equip-home .chest-open-btn{background:linear-gradient(135deg,#065f46,#10b981);color:white;}
 
 
 /* ── FORTUNE WHEEL ── */
@@ -986,6 +1000,9 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
       <div class="rate-badges" id="rates-legendary"></div>
       <div class="price-tag">🪙 2 500 pièces</div>
       <button class="btn-buy" data-box="legendary" data-qty="1">Acheter ×1</button>
+      <div class="buy-multi">
+        <button class="btn-buy-x3" data-box="legendary" data-qty="3">×3 — 6 750🪙</button>
+      </div>
     </div>
 
     <div class="shop-card scroll">
@@ -995,6 +1012,9 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
       <div class="rate-badges" id="rates-scroll"></div>
       <div class="price-tag">🪙 5 000 pièces</div>
       <button class="btn-buy" data-box="scroll" data-qty="1">Invoquer ×1</button>
+      <div class="buy-multi">
+        <button class="btn-buy-x3" data-box="scroll" data-qty="3">×3 — 13 500🪙</button>
+      </div>
     </div>
 
     <div class="shop-card cosmic-box" id="shop-cosmic-card">
@@ -1422,7 +1442,15 @@ let chestToOpen = null; // index in ownedChests
 
 // ── UTILS ──
 function roll(rates){const r=Math.random()*100;let c=0;for(const[k,v]of Object.entries(rates)){c+=v;if(r<c)return k;}return'common';}
-function pickRandom(rarity){const p=CREATURES.filter(c=>c.rarity===rarity);return p[Math.floor(Math.random()*p.length)];}
+function pickRandom(rarity){
+  const p=CREATURES.filter(c=>c.rarity===rarity);
+  if(p.length===0){
+    // Fallback: rareté inférieure
+    const fallbacks=['legendary','epic','rare','common'];
+    for(const r of fallbacks){const fp=CREATURES.filter(c=>c.rarity===r);if(fp.length)return fp[Math.floor(Math.random()*fp.length)];}
+  }
+  return p[Math.floor(Math.random()*p.length)];
+}
 function pickVisual(){const r=Math.random();return pickRandom(r<0.55?'common':r<0.82?'rare':r<0.97?'epic':r<0.999?'legendary':'mythic');}
 function setCoins(n){coins=n;document.getElementById('coinDisplay').textContent=coins.toLocaleString('fr-FR');checkAchievements();updatePrestigeSection();}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
@@ -1448,13 +1476,15 @@ function renderHome(){
     const box = isEquip ? {cssClass:'equip-home',imgKey:'eq_box',name:"Coffre d'Équipement"} : BOXES[type];
     if (!box) return '';
     const qty = idxs.length;
-    const btn3 = qty >= 3 ? `<button class="chest-open-btn" data-type="${type}" data-mode="3" style="margin-top:6px;background:linear-gradient(135deg,#7c3aed,#a855f7)">🎲 Ouvrir ×3</button>` : '';
-    return `<div class="chest-card ${box.cssClass}" style="position:relative;">
-      <div style="position:absolute;top:6px;right:8px;background:rgba(0,0,0,0.55);border-radius:20px;padding:2px 8px;font-size:0.75rem;font-weight:800;color:#fff;">×${qty}</div>
-      <div class="chest-img-wrap" data-type="${type}" data-mode="1" style="cursor:pointer"><img src="${IMG[box.imgKey]}" alt="${box.name}"></div>
+    const btn3 = qty >= 3 ? `<button class="chest-open-btn btn-x3" data-type="${type}" data-mode="3">🎲 ×3</button>` : '';
+    return `<div class="chest-card ${box.cssClass}">
+      <div style="position:absolute;top:7px;right:9px;background:rgba(0,0,0,0.6);border-radius:20px;padding:2px 9px;font-size:0.7rem;font-weight:800;color:#fff;letter-spacing:0.5px;">×${qty}</div>
+      <div class="chest-img-wrap"><img src="${IMG[box.imgKey]}" alt="${box.name}"></div>
       <div class="chest-name">${box.name}</div>
-      <button class="chest-open-btn" data-type="${type}" data-mode="1">⚔️ Ouvrir ×1</button>
-      ${btn3}
+      <div class="chest-btn-group">
+        <button class="chest-open-btn btn-x1" data-type="${type}" data-mode="1">⚔️ Ouvrir ×1</button>
+        ${btn3}
+      </div>
     </div>`;
   }).join('');
   grid.querySelectorAll('[data-mode]').forEach(el => {
@@ -1706,11 +1736,23 @@ function doOpenChest(){
 
 async function startChestOpen3(type) {
   if (spinning) return;
+  // Coffre équipement : ouvrir 3 fois en séquence (pas de roulette triple)
+  if (type === 'equip') {
+    const idxs = [];
+    ownedChests.forEach((ch, i) => { if (ch.type === 'equip') idxs.push(i); });
+    if (idxs.length < 3) { toast("❌ Tu n'as pas 3 coffres d'équipement !"); return; }
+    [idxs[2], idxs[1], idxs[0]].forEach(i => ownedChests.splice(i, 1));
+    renderHome();
+    for (let i = 0; i < 3; i++) {
+      await triggerOpenBox('equip');
+      await new Promise(r => setTimeout(r, 400));
+    }
+    return;
+  }
   const idxs = [];
   ownedChests.forEach((ch, i) => { if (ch.type === type) idxs.push(i); });
   if (idxs.length < 3) { toast("❌ Tu n'as pas 3 coffres de ce type !"); return; }
   [idxs[2], idxs[1], idxs[0]].forEach(i => ownedChests.splice(i, 1));
-  // Pas de renderHome() ici pour éviter le scroll — on le fait après
   await triggerOpenBox3(type);
   renderHome();
 }
@@ -1850,9 +1892,9 @@ function spinRoulette3(targets) {
     const cW = document.getElementById('rouletteSlot1').offsetWidth;
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       tracks.forEach((track, i) => {
-        const offset = (Math.random()*60-30);
-        const finalX = -(42*ITEM_W - cW/2 + 50 + offset);
-        const dur = 3.8 + i * 0.25;
+        // Pas d'offset aléatoire — centrage exact sur l'item cible (index 42)
+        const finalX = -(42*ITEM_W + ITEM_W/2 - cW/2);
+        const dur = 3.8 + i * 0.3;
         track.style.transition = `transform ${dur}s cubic-bezier(0.05,0.85,0.25,1)`;
         track.style.transform = 'translateX('+finalX+'px)';
       });
