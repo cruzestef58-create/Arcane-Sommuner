@@ -206,8 +206,9 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 
 /* ── ROULETTE ── */
 #rouletteOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;
-  align-items:center;justify-content:center;flex-direction:column;gap:24px;}
+  align-items:center;justify-content:center;flex-direction:column;gap:16px;overflow:hidden;}
 #rouletteOverlay.active{display:flex;}
+#rouletteSlots{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;}
 .roulette-title{font-size:1.3rem;font-weight:700;color:#a855f7;letter-spacing:2px;text-transform:uppercase;}
 .roulette-container{width:640px;max-width:90vw;height:120px;overflow:hidden;border-radius:10px;
   border:2px solid #a855f7;position:relative;background:#0d0d1a;}
@@ -1002,7 +1003,10 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
       <div class="shop-desc">Un artefact d'un autre univers. Contient des créatures mythiques — et une infime chance d'invoquer le <strong style="color:#fff">Dieu de l'Univers</strong>.</div>
       <div class="rate-badges" id="rates-cosmic"></div>
       <div class="price-tag">🪙 50 000 pièces</div>
-      <button class="btn-buy" data-box="cosmic" data-qty="1">💎 Invoquer ×1</button>
+      <div style="display:flex;gap:8px;flex-direction:column;">
+        <button class="btn-buy" data-box="cosmic" data-qty="1">💎 Invoquer ×1 — 50 000 🪙</button>
+        <button class="btn-buy" data-box="cosmic" data-qty="3" style="background:linear-gradient(135deg,#6d28d9,#a855f7);">🎲 Invoquer ×3 — 150 000 🪙</button>
+      </div>
     </div>
 
         <div class="shop-card equip-box">
@@ -1491,6 +1495,12 @@ function buyChest(boxType, qty){
   renderHome();
   const label=qty>1?`×${qty} coffres achetés (${totalCost.toLocaleString('fr-FR')}🪙)`:`Coffre acheté (${totalCost.toLocaleString('fr-FR')}🪙)`;
   toast('✅ '+label);
+  saveGame();
+  if (qty === 3) {
+    showTab('home');
+    setTimeout(() => startChestOpen3(boxType), 300);
+    return;
+  }
   showTab('home');
 }
 
@@ -1699,10 +1709,10 @@ async function startChestOpen3(type) {
   const idxs = [];
   ownedChests.forEach((ch, i) => { if (ch.type === type) idxs.push(i); });
   if (idxs.length < 3) { toast("❌ Tu n'as pas 3 coffres de ce type !"); return; }
-  // Retirer 3 coffres (du plus grand index au plus petit pour pas décaler)
   [idxs[2], idxs[1], idxs[0]].forEach(i => ownedChests.splice(i, 1));
-  renderHome();
+  // Pas de renderHome() ici pour éviter le scroll — on le fait après
   await triggerOpenBox3(type);
+  renderHome();
 }
 
 async function triggerOpenBox3(boxType) {
@@ -1810,6 +1820,7 @@ function spinRoulette(target){
     const ITEM_W = 104;
     buildRouletteTrack(track, target, false);
     overlay.classList.add('active');
+    document.body.style.overflow='hidden';
     track.style.transition='none'; track.style.transform='translateX(0)';
     const cW = document.getElementById('rouletteSlot1').offsetWidth;
     const finalX = -(42*ITEM_W - cW/2 + 50 + (Math.random()*40-20));
@@ -1817,7 +1828,7 @@ function spinRoulette(target){
       track.style.transition='transform 4s cubic-bezier(0.05,0.85,0.25,1)';
       track.style.transform='translateX('+finalX+'px)';
     }));
-    setTimeout(()=>{ overlay.classList.remove('active'); resolve(); }, 4300);
+    setTimeout(()=>{ overlay.classList.remove('active'); document.body.style.overflow=''; resolve(); }, 4300);
   });
 }
 
@@ -1834,6 +1845,7 @@ function spinRoulette3(targets) {
     const tracks = [1,2,3].map(n => document.getElementById('rouletteTrack'+n));
     tracks.forEach((track, i) => buildRouletteTrack(track, targets[i], true));
     overlay.classList.add('active');
+    document.body.style.overflow='hidden';
     tracks.forEach(t => { t.style.transition='none'; t.style.transform='translateX(0)'; });
     const cW = document.getElementById('rouletteSlot1').offsetWidth;
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -1845,7 +1857,7 @@ function spinRoulette3(targets) {
         track.style.transform = 'translateX('+finalX+'px)';
       });
     }));
-    setTimeout(()=>{ overlay.classList.remove('active'); resolve(); }, 4800);
+    setTimeout(()=>{ overlay.classList.remove('active'); document.body.style.overflow=''; resolve(); }, 4800);
   });
 }
 
