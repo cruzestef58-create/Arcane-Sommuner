@@ -211,6 +211,9 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .roulette-title{font-size:1.3rem;font-weight:700;color:#a855f7;letter-spacing:2px;text-transform:uppercase;}
 .roulette-container{width:640px;max-width:90vw;height:120px;overflow:hidden;border-radius:10px;
   border:2px solid #a855f7;position:relative;background:#0d0d1a;}
+.roulette-container.mini{height:90px;}
+.roulette-container.mini .roulette-item{height:86px;}
+.roulette-container.mini .roulette-item img{width:60px;height:60px;}
 .roulette-marker{position:absolute;top:0;bottom:0;left:50%;width:3px;
   background:#f59e0b;transform:translateX(-50%);z-index:10;box-shadow:0 0 12px #f59e0b;}
 .roulette-track{display:flex;position:absolute;left:0;top:0;height:100%;will-change:transform;}
@@ -1194,10 +1197,20 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 
 <!-- ROULETTE -->
 <div id="rouletteOverlay">
-  <div class="roulette-title">✨ Invocation en cours...</div>
-  <div class="roulette-container">
-    <div class="roulette-marker"></div>
-    <div class="roulette-track" id="rouletteTrack"></div>
+  <div class="roulette-title" id="rouletteTitle">✨ Invocation en cours...</div>
+  <div id="rouletteSlots">
+    <div class="roulette-container" id="rouletteSlot1">
+      <div class="roulette-marker"></div>
+      <div class="roulette-track" id="rouletteTrack1"></div>
+    </div>
+    <div class="roulette-container" id="rouletteSlot2" style="display:none">
+      <div class="roulette-marker"></div>
+      <div class="roulette-track" id="rouletteTrack2"></div>
+    </div>
+    <div class="roulette-container" id="rouletteSlot3" style="display:none">
+      <div class="roulette-marker"></div>
+      <div class="roulette-track" id="rouletteTrack3"></div>
+    </div>
   </div>
 </div>
 
@@ -1227,9 +1240,22 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
       <button class="btn-keep" id="btn-keep">Garder</button>
       <button class="btn-sell-r" id="btn-sell-r">Vendre 🪙<span id="resultSellVal"></span></button>
     </div>
+    <div style="display:flex;gap:8px;margin-top:10px;justify-content:center;">
+      <button id="btn-reroll" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-weight:800;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;gap:6px;">🎲 Relancer <span id="rerollCost" style="opacity:0.8;font-size:0.78rem"></span></button>
+      <button id="btn-buy1" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-weight:800;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;gap:6px;">🛒 Acheter ×1 <span id="buy1Cost" style="opacity:0.8;font-size:0.78rem"></span></button>
+    </div>
   </div>
 </div>
 
+<div id="tripleResultModal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+  <div style="font-size:1.2rem;font-weight:800;color:#a855f7;letter-spacing:2px;margin-bottom:4px;">✨ 3 INVOCATIONS ✨</div>
+  <div id="tripleCards" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;"></div>
+  <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;justify-content:center;">
+    <button id="tripleKeepAll" style="background:linear-gradient(135deg,#065f46,#10b981);color:#fff;border:none;border-radius:12px;padding:11px 22px;font-weight:800;cursor:pointer;">✅ Garder tout</button>
+    <button id="tripleSellCommons" style="background:linear-gradient(135deg,#6b7280,#9ca3af);color:#fff;border:none;border-radius:12px;padding:11px 22px;font-weight:800;cursor:pointer;">💰 Vendre les communs</button>
+    <button id="tripleReroll" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:12px;padding:11px 22px;font-weight:800;cursor:pointer;">🎲 Relancer ×3 <span id="tripleRerollCost" style="opacity:0.8;font-size:0.78rem"></span></button>
+  </div>
+</div>
 <div id="glowFlash"></div>
 <div id="beamSweep"></div>
 <canvas id="particlesCanvas"></canvas>
@@ -1407,18 +1433,36 @@ function renderHome(){
     document.getElementById('goShopBtn').addEventListener('click',()=>showTab('shop'));
     return;
   }
-  grid.innerHTML=ownedChests.map((ch,i)=>{
-    const isEquip=(ch.type==='equip');
-    const box=isEquip?{cssClass:'equip-home',imgKey:'eq_box',name:"Coffre d'Équipement"}:BOXES[ch.type];
-    if(!box)return'';
-    return `<div class="chest-card ${box.cssClass}" data-idx="${i}">
-      <div class="chest-img-wrap"><img src="${IMG[box.imgKey]}" alt="${box.name}"></div>
+  // Regrouper par type
+  const grouped = {};
+  ownedChests.forEach((ch, i) => {
+    if (!grouped[ch.type]) grouped[ch.type] = [];
+    grouped[ch.type].push(i);
+  });
+  grid.innerHTML = Object.entries(grouped).map(([type, idxs]) => {
+    const isEquip = (type === 'equip');
+    const box = isEquip ? {cssClass:'equip-home',imgKey:'eq_box',name:"Coffre d'Équipement"} : BOXES[type];
+    if (!box) return '';
+    const qty = idxs.length;
+    const btn3 = qty >= 3 ? `<button class="chest-open-btn" data-type="${type}" data-mode="3" style="margin-top:6px;background:linear-gradient(135deg,#7c3aed,#a855f7)">🎲 Ouvrir ×3</button>` : '';
+    return `<div class="chest-card ${box.cssClass}" style="position:relative;">
+      <div style="position:absolute;top:6px;right:8px;background:rgba(0,0,0,0.55);border-radius:20px;padding:2px 8px;font-size:0.75rem;font-weight:800;color:#fff;">×${qty}</div>
+      <div class="chest-img-wrap" data-type="${type}" data-mode="1" style="cursor:pointer"><img src="${IMG[box.imgKey]}" alt="${box.name}"></div>
       <div class="chest-name">${box.name}</div>
-      <button class="chest-open-btn">⚔️ Ouvrir</button>
+      <button class="chest-open-btn" data-type="${type}" data-mode="1">⚔️ Ouvrir ×1</button>
+      ${btn3}
     </div>`;
   }).join('');
-  grid.querySelectorAll('.chest-card').forEach(card=>{
-    card.addEventListener('click',()=>startChestOpen(parseInt(card.dataset.idx)));
+  grid.querySelectorAll('[data-mode]').forEach(el => {
+    el.addEventListener('click', () => {
+      const type = el.dataset.type;
+      const mode = parseInt(el.dataset.mode);
+      if (mode === 3) startChestOpen3(type);
+      else {
+        const idx = ownedChests.findIndex(c => c.type === type);
+        if (idx !== -1) startChestOpen(idx);
+      }
+    });
   });
 }
 
@@ -1650,7 +1694,50 @@ function doOpenChest(){
   shakePhase();
 }
 
+async function startChestOpen3(type) {
+  if (spinning) return;
+  const idxs = [];
+  ownedChests.forEach((ch, i) => { if (ch.type === type) idxs.push(i); });
+  if (idxs.length < 3) { toast("❌ Tu n'as pas 3 coffres de ce type !"); return; }
+  // Retirer 3 coffres (du plus grand index au plus petit pour pas décaler)
+  [idxs[2], idxs[1], idxs[0]].forEach(i => ownedChests.splice(i, 1));
+  renderHome();
+  await triggerOpenBox3(type);
+}
+
+async function triggerOpenBox3(boxType) {
+  spinning = true;
+  lastBoxType = boxType;
+  const mythicEqCount = countMythicEquipped();
+  const results = [1,2,3].map(() => {
+    let creatureRates = { ...BOXES[boxType].rates };
+    if (mythicEqCount > 0 && creatureRates.unique !== undefined) {
+      const bonus = mythicEqCount * 0.0002;
+      creatureRates.unique = (creatureRates.unique||0) + bonus;
+      creatureRates.common = Math.max(0.001, (creatureRates.common||0) - bonus);
+    }
+    const rarity = roll(creatureRates);
+    const creature = pickRandom(rarity);
+    return { creature, rarity };
+  });
+  // Effets selon la meilleure rareté
+  const bestRarity = ['unique','mythic','legendary','epic','rare','common'].find(r => results.some(x=>x.rarity===r));
+  triggerEffects(bestRarity);
+  if (boxType==='cosmic') { fxLightning('#ff4ecd'); setTimeout(()=>fxLightning('#fff'),200); }
+  await spinRoulette3(results.map(r=>r.creature));
+  // Ajouter à l'inventaire
+  results.forEach(({creature, rarity}) => {
+    inventory[creature.id] = (inventory[creature.id]||0) + 1;
+    trackStat('chestsOpened');
+    trackStat('earned', 0);
+  });
+  saveGame();
+  showTripleResult(results);
+  spinning = false;
+}
+
 async function triggerOpenBox(boxType){
+  lastBoxType = boxType;
   spinning=true;
   if(boxType==='equip'){
     const item=rollEquipment();
@@ -1696,29 +1783,69 @@ async function triggerOpenBox(boxType){
 }
 
 // ── ROULETTE ──
+function buildRouletteTrack(trackEl, target, mini=false) {
+  trackEl.innerHTML = '';
+  const COUNT=48, TARGET_I=42, ITEM_W=mini?82:104;
+  for (let i=0; i<COUNT; i++) {
+    const c = (i===TARGET_I) ? target : pickVisual();
+    const div = document.createElement('div');
+    div.className = 'roulette-item rarity-'+c.rarity;
+    const img = document.createElement('img'); img.src=c.img; img.alt=c.name;
+    const span = document.createElement('span'); span.className='item-name'; span.textContent=c.name;
+    div.appendChild(img); div.appendChild(span); trackEl.appendChild(div);
+  }
+  return TARGET_I * (mini?82:104);
+}
+
 function spinRoulette(target){
   return new Promise(resolve=>{
-    const track=document.getElementById('rouletteTrack');
-    track.innerHTML='';
-    const COUNT=48,TARGET_I=42,ITEM_W=104;
-    for(let i=0;i<COUNT;i++){
-      const c=(i===TARGET_I)?target:pickVisual();
-      const div=document.createElement('div');
-      div.className='roulette-item rarity-'+c.rarity;
-      const img=document.createElement('img');img.src=c.img;img.alt=c.name;
-      const span=document.createElement('span');span.className='item-name';span.textContent=c.name;
-      div.appendChild(img);div.appendChild(span);track.appendChild(div);
-    }
-    const overlay=document.getElementById('rouletteOverlay');
+    const overlay = document.getElementById('rouletteOverlay');
+    // Mode ×1 : un seul slot visible
+    document.getElementById('rouletteSlot1').style.display='';
+    document.getElementById('rouletteSlot1').classList.remove('mini');
+    document.getElementById('rouletteSlot2').style.display='none';
+    document.getElementById('rouletteSlot3').style.display='none';
+    document.getElementById('rouletteTitle').textContent='✨ Invocation en cours...';
+    const track = document.getElementById('rouletteTrack1');
+    const ITEM_W = 104;
+    buildRouletteTrack(track, target, false);
     overlay.classList.add('active');
-    track.style.transition='none';track.style.transform='translateX(0)';
-    const cW=overlay.querySelector('.roulette-container').offsetWidth;
-    const finalX=-(TARGET_I*ITEM_W-cW/2+50+(Math.random()*40-20));
+    track.style.transition='none'; track.style.transform='translateX(0)';
+    const cW = document.getElementById('rouletteSlot1').offsetWidth;
+    const finalX = -(42*ITEM_W - cW/2 + 50 + (Math.random()*40-20));
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       track.style.transition='transform 4s cubic-bezier(0.05,0.85,0.25,1)';
       track.style.transform='translateX('+finalX+'px)';
     }));
-    setTimeout(()=>{overlay.classList.remove('active');resolve();},4300);
+    setTimeout(()=>{ overlay.classList.remove('active'); resolve(); }, 4300);
+  });
+}
+
+function spinRoulette3(targets) {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('rouletteOverlay');
+    document.getElementById('rouletteTitle').textContent='⚡ 3 INVOCATIONS SIMULTANÉES ⚡';
+    [1,2,3].forEach(n => {
+      const slot = document.getElementById('rouletteSlot'+n);
+      slot.style.display = '';
+      slot.classList.add('mini');
+    });
+    const ITEM_W = 82;
+    const tracks = [1,2,3].map(n => document.getElementById('rouletteTrack'+n));
+    tracks.forEach((track, i) => buildRouletteTrack(track, targets[i], true));
+    overlay.classList.add('active');
+    tracks.forEach(t => { t.style.transition='none'; t.style.transform='translateX(0)'; });
+    const cW = document.getElementById('rouletteSlot1').offsetWidth;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      tracks.forEach((track, i) => {
+        const offset = (Math.random()*60-30);
+        const finalX = -(42*ITEM_W - cW/2 + 50 + offset);
+        const dur = 3.8 + i * 0.25;
+        track.style.transition = `transform ${dur}s cubic-bezier(0.05,0.85,0.25,1)`;
+        track.style.transform = 'translateX('+finalX+'px)';
+      });
+    }));
+    setTimeout(()=>{ overlay.classList.remove('active'); resolve(); }, 4800);
   });
 }
 
@@ -1976,6 +2103,36 @@ function launchParticlesAdvanced(rarity, cx, cy) {
 }
 
 // ── RESULT ──
+let lastBoxType = null;
+
+function showTripleResult(results) {
+  const modal = document.getElementById('tripleResultModal');
+  const container = document.getElementById('tripleCards');
+  container.innerHTML = results.map(({creature, rarity}, i) => {
+    const isNew = inventory[creature.id] === 1;
+    const color = RARITY_COLOR[rarity]||'#fff';
+    const label = RARITY_LABEL[rarity]||rarity;
+    return `<div style="background:rgba(255,255,255,0.05);border:2px solid ${color};border-radius:16px;padding:14px;text-align:center;width:140px;flex-shrink:0;">
+      <div style="font-size:0.7rem;font-weight:800;color:${color};letter-spacing:1px;margin-bottom:6px;">${label}</div>
+      <img src="${creature.img}" style="width:90px;height:90px;object-fit:contain;border-radius:10px;">
+      <div style="font-size:0.78rem;font-weight:800;color:#fff;margin-top:6px;">${creature.name}</div>
+      ${isNew?'<div style="font-size:0.65rem;color:#10b981;font-weight:700;margin-top:3px;">✨ NOUVEAU !</div>':''}
+    </div>`;
+  }).join('');
+  // Bouton relancer ×3
+  const hasBox3 = lastBoxType && ownedChests.filter(c=>c.type===lastBoxType).length >= 3;
+  const box = lastBoxType ? BOXES[lastBoxType] : null;
+  document.getElementById('tripleReroll').style.display = hasBox3 ? 'flex' : 'none';
+  document.getElementById('tripleRerollCost').textContent = '';
+  modal.style.display = 'flex';
+  // Stocker les résultats pour les ventes
+  modal._results = results;
+}
+function closeTripleResult() {
+  document.getElementById('tripleResultModal').style.display = 'none';
+  renderInventory(); renderCollection(); updateIncomeDisplay(); updateTaxDisplay();
+}
+
 function showResult(c,rarity,isNew){
   document.getElementById('resultCard').className='result-card rarity-'+rarity;
   document.getElementById('resultRarity').textContent=RARITY_LABEL[rarity];
@@ -1985,9 +2142,40 @@ function showResult(c,rarity,isNew){
   document.getElementById('resultType').textContent=c.type;
   document.getElementById('resultSellVal').textContent=c.sell.toLocaleString('fr-FR');
   document.getElementById('resultNew').style.display=isNew?'inline-block':'none';
+  // Boutons relancer/acheter
+  const box = lastBoxType ? (BOXES[lastBoxType] || null) : null;
+  const cost = box ? box.cost : null;
+  const costStr = cost ? cost.toLocaleString('fr-FR') + ' 🪙' : '';
+  document.getElementById('rerollCost').textContent = costStr;
+  document.getElementById('buy1Cost').textContent   = costStr;
+  const hasBox = lastBoxType ? (ownedChests.filter(c=>c.type===lastBoxType).length > 0) : false;
+  document.getElementById('btn-reroll').style.display = hasBox ? 'flex' : 'none';
+  document.getElementById('btn-buy1').style.display   = (box && cost) ? 'flex' : 'none';
   document.getElementById('resultModal').classList.add('active');
 }
 function closeResult(){document.getElementById('resultModal').classList.remove('active');pending=null;}
+
+function rerollFromResult() {
+  if (!lastBoxType || spinning) return;
+  closeResult();
+  const idx = ownedChests.findIndex(c => c.type === lastBoxType);
+  if (idx !== -1) {
+    ownedChests.splice(idx, 1);
+    renderHome();
+    triggerOpenBox(lastBoxType);
+  }
+}
+
+function buy1FromResult() {
+  if (!lastBoxType || spinning) return;
+  const box = BOXES[lastBoxType];
+  if (!box) return;
+  if (coins < box.cost) { toast('❌ Pas assez de pièces !'); return; }
+  setCoins(coins - box.cost);
+  trackStat('spent', box.cost);
+  closeResult();
+  triggerOpenBox(lastBoxType);
+}
 function sellResult(){
   if(!pending)return;
   openBuyerModal(pending.creature, 'result');
@@ -3979,6 +4167,27 @@ window.addEventListener('DOMContentLoaded',function(){
   document.getElementById('equip-result-backdrop').addEventListener('click',closeEquipResult);
   document.getElementById('btn-keep').addEventListener('click',closeResult);
   document.getElementById('btn-sell-r').addEventListener('click',sellResult);
+  document.getElementById('btn-reroll').addEventListener('click',rerollFromResult);
+  document.getElementById('btn-buy1').addEventListener('click',buy1FromResult);
+  document.getElementById('tripleKeepAll').addEventListener('click', closeTripleResult);
+  document.getElementById('tripleSellCommons').addEventListener('click', () => {
+    const modal = document.getElementById('tripleResultModal');
+    const results = modal._results || [];
+    let sold = 0, total = 0;
+    results.forEach(({creature, rarity}) => {
+      if (rarity === 'common') {
+        removeCreatureFromInventory(creature.id, 1);
+        total += creature.sell; sold++;
+      }
+    });
+    if (sold > 0) { setCoins(coins + total); toast('💰 ' + sold + ' commun(s) vendu(s) pour ' + total.toLocaleString('fr-FR') + ' 🪙'); }
+    else toast('Aucun commun à vendre !');
+    closeTripleResult();
+  });
+  document.getElementById('tripleReroll').addEventListener('click', () => {
+    closeTripleResult();
+    if (lastBoxType) startChestOpen3(lastBoxType);
+  });
 
   // Inventory filters
   document.querySelectorAll('.inv-filter').forEach(btn=>{
