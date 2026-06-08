@@ -419,7 +419,7 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .mission-name{font-weight:800;font-size:0.82rem;margin-bottom:4px;}
 .mission-time{font-size:0.72rem;color:var(--text2);}
 .mission-reward{font-size:0.72rem;color:#fbbf24;margin-top:4px;}
-.expedition-slots{display:flex;flex-direction:column;gap:10px;}
+
 .exp-slot{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;min-height:70px;display:flex;align-items:center;gap:14px;}
 .exp-slot.empty{border-style:dashed;justify-content:center;color:var(--text2);font-size:0.82rem;cursor:pointer;}
 .exp-slot.empty:hover{border-color:rgba(168,85,247,0.5);color:#a78bfa;}
@@ -734,15 +734,15 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 #rarityVignette { position:fixed;inset:0;pointer-events:none;z-index:248;opacity:0;transition:opacity 0.4s; }
 
 /* Texte rarity entrant */
-#rarityBanner { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:9998;
+#rarityBanner { position:fixed;top:18px;left:50%;transform:translateX(-50%) scale(0);pointer-events:none;z-index:9998;
   font-size:clamp(2rem,10vw,5rem);font-weight:900;letter-spacing:0.1em;text-shadow:0 0 40px currentColor,0 4px 20px rgba(0,0,0,0.8);
   opacity:0;transition:none;white-space:nowrap; }
-@keyframes banner-pop { 0%{transform:translate(-50%,-50%) scale(0) rotate(-8deg);opacity:0}
-  40%{transform:translate(-50%,-50%) scale(1.15) rotate(2deg);opacity:1}
-  70%{transform:translate(-50%,-50%) scale(0.97) rotate(0deg);opacity:1}
-  100%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1} }
-@keyframes banner-out { 0%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-60%) scale(1.1)} }
+@keyframes banner-pop { 0%{transform:translateX(-50%) scale(0) rotate(-8deg);opacity:0}
+  40%{transform:translateX(-50%) scale(1.15) rotate(2deg);opacity:1}
+  70%{transform:translateX(-50%) scale(0.97) rotate(0deg);opacity:1}
+  100%{transform:translateX(-50%) scale(1) rotate(0deg);opacity:1} }
+@keyframes banner-out { 0%{opacity:1;transform:translateX(-50%) scale(1)}
+  100%{opacity:0;transform:translateX(-50%) scale(1.1)} }
 
 /* Lightning bolt effect */
 #lightningCanvas { position:fixed;inset:0;pointer-events:none;z-index:249;display:none; }
@@ -857,6 +857,17 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     </div>
     <div class="tax-wrap free" id="taxWrap" style="display:none">
       🏛️ <span id="taxDisplay">0</span><span>/min</span>
+    </div>
+    <div style="position:relative;">
+      <button id="codeTriggerBtn" title="Code secret" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;border-radius:8px;padding:6px 10px;font-size:0.85rem;cursor:pointer;font-weight:800;white-space:nowrap;">🔑</button>
+      <div id="codePopup" style="display:none;position:absolute;top:calc(100% + 8px);right:0;width:260px;background:var(--surface);border:1px solid rgba(124,58,237,0.5);border-radius:12px;padding:12px;z-index:600;box-shadow:0 8px 30px rgba(0,0,0,0.5);">
+        <div style="font-size:0.75rem;font-weight:800;color:#a78bfa;margin-bottom:8px;letter-spacing:1px;">🔑 CODE SECRET</div>
+        <div style="display:flex;gap:6px;">
+          <input id="codeInput" type="text" placeholder="Entre le code..." style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 10px;color:#fff;font-size:0.82rem;outline:none;font-family:inherit;"/>
+          <button id="codeBtn" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:8px;padding:7px 12px;font-weight:800;font-size:0.82rem;cursor:pointer;">OK</button>
+        </div>
+        <div id="codeMsg" style="margin-top:6px;font-size:0.75rem;min-height:16px;"></div>
+      </div>
     </div>
     <div class="coins-wrap">
       <img id="img_coin" src="" alt="">
@@ -1132,21 +1143,9 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     </div>
   </div>
 
-  <div class="aventures-section">
-    <h3>🗺️ Expéditions <span style="font-size:0.72rem;color:var(--text2);font-weight:400">(Tes créatures partent en mission et rapportent des pièces !)</span></h3>
-    <div class="expedition-slots" id="expeditionSlots"></div>
-    <button class="btn-free-chest ready" id="btn-new-expedition" style="margin-top:12px;width:100%;padding:12px">+ Lancer une expédition</button>
-  </div>
 
-  <div class="aventures-section">
-    <h3>🔑 Code Secret</h3>
-    <p style="font-size:0.78rem;color:var(--text2);margin-bottom:12px">Entre un code pour obtenir des récompenses spéciales.</p>
-    <div style="display:flex;gap:8px;">
-      <input id="codeInput" type="text" placeholder="Entre ton code..." style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text1);font-size:0.88rem;outline:none;font-family:inherit;" />
-      <button id="codeBtn" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:800;font-size:0.88rem;cursor:pointer;white-space:nowrap;">Valider</button>
-    </div>
-    <div id="codeMsg" style="margin-top:8px;font-size:0.78rem;min-height:18px;"></div>
-  </div>
+
+
 </div>
 
 <!-- CHEST OPEN OVERLAY -->
@@ -2488,7 +2487,6 @@ function saveGame() {
     questClaimed,
     lastQuestReset,
     creatureLevels,
-    expeditions,
     dailyEvent,
     lastEventDate,
     claimedSetBonuses,
@@ -2521,7 +2519,6 @@ function loadGame() {
     questClaimed   = d.questClaimed   ?? {};
     lastQuestReset = d.lastQuestReset ?? 0;
     creatureLevels = d.creatureLevels ?? {};
-    expeditions    = d.expeditions    ?? [];
     dailyEvent     = d.dailyEvent     ?? null;
     lastEventDate      = d.lastEventDate      ?? '';
     claimedSetBonuses  = d.claimedSetBonuses  ?? {};
@@ -2556,7 +2553,6 @@ const DAILY_EVENTS = [
   { id:'market',     icon:'🛒', name:'Foire aux Créatures !',    desc:'Tous les acheteurs offrent +40% de bonus.', color:'#4ade80', buff:'market' },
   { id:'fastchest',  icon:'🎁', name:'Distribution Gratuite !', desc:'Le coffre gratuit se recharge toutes les 5 min.', color:'#60a5fa', buff:'fastchest' },
   { id:'fusion2',    icon:'🔮', name:'Nuit de Fusion !',         desc:'Les fusions ne coûtent que 2 créatures.', color:'#f472b6', buff:'fusion2' },
-  { id:'fastexp',    icon:'🚀', name:'Expédition Express !',     desc:'Toutes les expéditions durent 2× moins longtemps.', color:'#34d399', buff:'fastexp' },
   { id:'upgrade50',  icon:'⚡', name:'Forge Enchantée !',        desc:'Les améliorations de créatures coûtent 50% moins cher.', color:'#fb923c', buff:'upgrade50' },
 ];
 
@@ -2628,193 +2624,26 @@ const MISSIONS = [
 ];
 
 const MAX_EXP_SLOTS = 3;
-let expeditions = []; // [{creatureId, missionId, startTime, endTime}]
-let expPickerState = { missionId: null, creatureId: null };
-
-function getMissionDuration(mission) {
-  return hasBuff('fastexp') ? Math.round(mission.duration / 2) : mission.duration;
-}
-
-function renderExpeditions() {
-  const container = document.getElementById('expeditionSlots');
-  if (!container) return;
-
-  const now = Date.now();
-  let html = '';
-
-  expeditions.forEach((exp, i) => {
-    const c = CREATURES.find(x => x.id === exp.creatureId);
-    const m = MISSIONS.find(x => x.id === exp.missionId);
-    if (!c || !m) return;
-    const done = now >= exp.endTime;
-    const remaining = exp.endTime - now;
-    const mins = Math.floor(remaining / 60000);
-    const secs = Math.floor((remaining % 60000) / 1000);
-    html += `<div class="exp-slot ${done ? 'done' : 'active'}">
-      <img class="exp-creature-img" src="${c.img}" alt="${c.name}">
-      <div class="exp-info">
-        <div class="exp-creature-name">${c.name}</div>
-        <div class="exp-mission-name">${m.icon} ${m.name}</div>
-        <div class="exp-timer ${done ? 'done' : ''}">${done ? '✅ Terminée !' : `⏳ ${mins}m ${secs.toString().padStart(2,'0')}s`}</div>
-      </div>
-      ${done ? `<button class="btn-collect-exp" data-idx="${i}">Récupérer</button>` : ''}
-    </div>`;
-  });
-
-  // Empty slots
-  const used = expeditions.length;
-  for (let i = used; i < MAX_EXP_SLOTS; i++) {
-    html += `<div class="exp-slot empty">Emplacement libre — lance une expédition !</div>`;
-  }
-
-  container.innerHTML = html;
-
-  container.querySelectorAll('.btn-collect-exp').forEach(btn => {
-    btn.addEventListener('click', function() { collectExpedition(parseInt(this.dataset.idx)); });
-  });
-
-  const newBtn = document.getElementById('btn-new-expedition');
-  if (newBtn) newBtn.disabled = expeditions.length >= MAX_EXP_SLOTS;
-}
-
-function collectExpedition(idx) {
-  const exp = expeditions[idx];
-  if (!exp) return;
-  const now = Date.now();
-  if (now < exp.endTime) { toast('La mission est encore en cours !'); return; }
-
-  const c = CREATURES.find(x => x.id === exp.creatureId);
-  const m = MISSIONS.find(x => x.id === exp.missionId);
-  if (!c || !m) return;
-
-  const baseReward = m.mult[c.rarity];
-  const levelBonus = getLevelMult(exp.creatureId);
-  const equipBonus = 1 + getEquipExpBonus(exp.creatureId) + getFamilyExpBonus(exp.creatureId);
-  const reward = Math.round(baseReward * levelBonus * equipBonus);
-  setCoins(coins + reward);
-
-  let msg = `🗺️ ${c.name} est de retour ! +${reward.toLocaleString('fr-FR')} 🪙`;
-
-  // Bonus creature chance
-  if (Math.random() < m.bonusChance) {
-    const bonusRarity = c.rarity === 'common' ? 'common' : (c.rarity === 'rare' ? 'rare' : (c.rarity === 'epic' ? 'rare' : 'epic'));
-    const candidates = CREATURES.filter(x => x.rarity === bonusRarity);
-    const bonus = candidates[Math.floor(Math.random() * candidates.length)];
-    inventory[bonus.id] = (inventory[bonus.id] || 0) + 1;
-    msg += ` + ${bonus.name} trouvé !`;
-    triggerEffects(bonusRarity);
-    renderInventory(); renderCollection(); updateIncomeDisplay();
-  }
-
-  expeditions.splice(idx, 1);
-  trackStat('expeditionsDone');
-  toast(msg);
-  checkAchievements();
-  renderExpeditions();
-  saveGame();
-}
-
-function openExpeditionPicker() {
-  const busyIds = new Set(expeditions.map(e => e.creatureId));
-  const creatures = Object.entries(inventory)
-    .map(([id, qty]) => ({ c: CREATURES.find(x => x.id === id), qty }))
-    .filter(e => e.c && e.qty > 0 && !busyIds.has(e.c.id));
-
-  if (creatures.length === 0) { toast('Toutes tes créatures sont déjà en expédition !'); return; }
-
-  expPickerState = { missionId: MISSIONS[0].id, creatureId: null };
-
-  const modal = document.createElement('div');
-  modal.className = 'exp-picker-backdrop';
-  modal.id = 'expPickerModal';
-  modal.innerHTML = `<div class="exp-picker-panel">
-    <h3>🗺️ Nouvelle Expédition</h3>
-    <p class="ep-sub">Choisis une mission puis une créature à envoyer.</p>
-    <div class="exp-mission-select" id="epMissions">
-      ${MISSIONS.map(m => {
-        const d = getMissionDuration(m);
-        const mins = Math.round(d / 60000);
-        return `<div class="mission-card ${m.id === expPickerState.missionId ? 'selected' : ''}" data-mid="${m.id}">
-          <div class="mission-icon">${m.icon}</div>
-          <div class="mission-name">${m.name}</div>
-          <div class="mission-time">${mins < 60 ? mins + ' min' : '1 heure'}</div>
-        </div>`;
-      }).join('')}
-    </div>
-    <p style="font-size:0.8rem;font-weight:700;margin-bottom:8px;color:var(--text2)">Choisir une créature :</p>
-    <div class="exp-creature-list" id="epCreatures">
-      ${creatures.map(({c,qty}) => `<div class="exp-creature-pick" data-cid="${c.id}">
-        <img src="${c.img}" alt="${c.name}">
-        <div class="epname">${c.name}</div>
-        <div class="epqty">×${qty}</div>
-      </div>`).join('')}
-    </div>
-    <button class="btn-launch-exp" id="btn-launch-exp" disabled>🚀 Lancer l'expédition</button>
-    <button class="ep-cancel" id="ep-cancel">Annuler</button>
-  </div>`;
-
-  document.body.appendChild(modal);
-
-  modal.querySelectorAll('.mission-card').forEach(card => {
-    card.addEventListener('click', function() {
-      expPickerState.missionId = this.dataset.mid;
-      modal.querySelectorAll('.mission-card').forEach(c => c.classList.remove('selected'));
-      this.classList.add('selected');
-    });
-  });
-
-  modal.querySelectorAll('.exp-creature-pick').forEach(card => {
-    card.addEventListener('click', function() {
-      expPickerState.creatureId = this.dataset.cid;
-      modal.querySelectorAll('.exp-creature-pick').forEach(c => c.classList.remove('selected'));
-      this.classList.add('selected');
-      document.getElementById('btn-launch-exp').disabled = false;
-    });
-  });
-
-  document.getElementById('btn-launch-exp').addEventListener('click', () => {
-    launchExpedition(expPickerState.missionId, expPickerState.creatureId);
-    modal.remove();
-  });
-  document.getElementById('ep-cancel').addEventListener('click', () => modal.remove());
-}
-
-function launchExpedition(missionId, creatureId) {
-  if (!missionId || !creatureId) return;
-  if (expeditions.length >= MAX_EXP_SLOTS) { toast('Tous les emplacements sont occupés !'); return; }
-  const m = MISSIONS.find(x => x.id === missionId);
-  const c = CREATURES.find(x => x.id === creatureId);
-  if (!m || !c) return;
-  const now = Date.now();
-  const duration = getMissionDuration(m);
-  expeditions.push({ creatureId, missionId, startTime: now, endTime: now + duration });
-  toast(`🗺️ ${c.name} part en ${m.name} (${m.desc}) !`);
-  renderExpeditions();
-  saveGame();
-}
-
-// Auto-check expeditions every 10s
-setInterval(() => { if (expeditions.some(e => Date.now() >= e.endTime)) renderExpeditions(); }, 10000);
 
 
 // ── EQUIPMENT SYSTEM ──
 const EQUIPMENT = [
   { id:'casque_fer',     name:'Casque en Fer',       type:'armor',  rarity:'common',    img:IMG['eq_casque_fer'],     incomeBonus:0.10, expBonus:0.00, desc:'+10% revenu' },
-  { id:'bottes_fer',     name:'Bottes en Fer',        type:'armor',  rarity:'common',    img:IMG['eq_bottes_fer'],     incomeBonus:0.00, expBonus:0.15, desc:'+15% expé' },
-  { id:'plastron_metal', name:'Plastron en Métal',    type:'armor',  rarity:'common',    img:IMG['eq_plastron_metal'], incomeBonus:0.05, expBonus:0.10, desc:'+5% revenu, +10% expé' },
+  { id:'bottes_fer',     name:'Bottes en Fer',        type:'armor',  rarity:'common',    img:IMG['eq_bottes_fer'],     incomeBonus:0.00, incomeBonus:0.15, desc:'+15% revenu' },
+  { id:'plastron_metal', name:'Plastron en Métal',    type:'armor',  rarity:'common',    img:IMG['eq_plastron_metal'], incomeBonus:0.05, expBonus:0.00, desc:'+5% revenu' },
   { id:'baton_vie',      name:'Bâton de Vie',         type:'weapon', rarity:'rare',      img:IMG['eq_baton_vie'],      incomeBonus:0.22, expBonus:0.00, desc:'+22% revenu' },
-  { id:'bouclier_glace', name:'Bouclier de Glace',    type:'armor',  rarity:'rare',      img:IMG['eq_bouclier_glace'], incomeBonus:0.00, expBonus:0.28, desc:'+28% expé' },
-  { id:'epee_glace',     name:'Épée de Glace',        type:'weapon', rarity:'rare',      img:IMG['eq_epee_glace'],     incomeBonus:0.00, expBonus:0.32, desc:'+32% expé' },
+  { id:'bouclier_glace', name:'Bouclier de Glace',    type:'armor',  rarity:'rare',      img:IMG['eq_bouclier_glace'], incomeBonus:0.00, incomeBonus:0.28, desc:'+28% revenu' },
+  { id:'epee_glace',     name:'Épée de Glace',        type:'weapon', rarity:'rare',      img:IMG['eq_epee_glace'],     incomeBonus:0.00, incomeBonus:0.32, desc:'+32% revenu' },
   { id:'grimoire',       name:'Grimoire Magique',     type:'weapon', rarity:'rare',      img:IMG['eq_grimoire'],       incomeBonus:0.28, expBonus:0.00, desc:'+28% revenu' },
-  { id:'dague_lumiere',  name:'Dague Lumière',        type:'weapon', rarity:'epic',      img:IMG['eq_dague'],          incomeBonus:0.18, expBonus:0.28, desc:'+18% revenu, +28% expé' },
-  { id:'revolver',       name:'Revolver Volcanique',  type:'weapon', rarity:'epic',      img:IMG['eq_revolver'],       incomeBonus:0.00, expBonus:0.50, desc:'+50% expé' },
+  { id:'dague_lumiere',  name:'Dague Lumière',        type:'weapon', rarity:'epic',      img:IMG['eq_dague'],          incomeBonus:0.18, expBonus:0.00, desc:'+18% revenu' },
+  { id:'revolver',       name:'Revolver Volcanique',  type:'weapon', rarity:'epic',      img:IMG['eq_revolver'],       incomeBonus:0.00, incomeBonus:0.45, desc:'+45% revenu' },
   { id:'gant_seigneur',  name:'Gant du Seigneur',     type:'armor',  rarity:'epic',      img:IMG['eq_gant'],           incomeBonus:0.38, expBonus:0.00, desc:'+38% revenu' },
-  { id:'casque_emp',     name:"Casque d'Empereur",    type:'armor',  rarity:'epic',      img:IMG['eq_casque_emp'],     incomeBonus:0.22, expBonus:0.32, desc:'+22% revenu, +32% expé' },
-  { id:'botte_or',       name:'Botte en Or',          type:'armor',  rarity:'epic',      img:IMG['eq_botte_or'],       incomeBonus:0.00, expBonus:0.55, desc:'+55% expé' },
-  { id:'bouclier_emp',   name:"Bouclier d'Empereur",  type:'armor',  rarity:'legendary', img:IMG['eq_bouclier_emp'],   incomeBonus:0.28, expBonus:0.50, desc:'+28% revenu, +50% expé' },
-  { id:'faux_mort',      name:'Faux des Morts',       type:'weapon', rarity:'legendary', img:IMG['eq_faux'],           incomeBonus:0.00, expBonus:0.75, desc:'+75% expé' },
+  { id:'casque_emp',     name:"Casque d'Empereur",    type:'armor',  rarity:'epic',      img:IMG['eq_casque_emp'],     incomeBonus:0.22, expBonus:0.00, desc:'+22% revenu' },
+  { id:'botte_or',       name:'Botte en Or',          type:'armor',  rarity:'epic',      img:IMG['eq_botte_or'],       incomeBonus:0.00, incomeBonus:0.50, desc:'+50% revenu' },
+  { id:'bouclier_emp',   name:"Bouclier d'Empereur",  type:'armor',  rarity:'legendary', img:IMG['eq_bouclier_emp'],   incomeBonus:0.28, expBonus:0.00, desc:'+28% revenu' },
+  { id:'faux_mort',      name:'Faux des Morts',       type:'weapon', rarity:'legendary', img:IMG['eq_faux'],           incomeBonus:0.00, incomeBonus:0.65, desc:'+65% revenu' },
   { id:'masque_abyssal', name:'Masque Abyssal',       type:'armor',  rarity:'legendary', img:IMG['eq_masque'],         incomeBonus:0.65, expBonus:0.00, desc:'+65% revenu' },
-  { id:'plastron_emp',   name:"Plastron d'Empereur",  type:'armor',  rarity:'legendary', img:IMG['eq_plastron_emp'],   incomeBonus:0.32, expBonus:0.58, desc:'+32% revenu, +58% expé' },
+  { id:'plastron_emp',   name:"Plastron d'Empereur",  type:'armor',  rarity:'legendary', img:IMG['eq_plastron_emp'],   incomeBonus:0.32, expBonus:0.00, desc:'+32% revenu' },
 ];
 
 const EQUIP_BOX_DEF = { cost:600, name:"Coffre d'Équipement", rates:{ common:50, rare:30, epic:15, legendary:5 } };
@@ -2944,7 +2773,7 @@ function showEquipResult(item) {
   document.getElementById('erType').textContent = TYPE_LABEL[item.type] || item.type;
   const stats = [];
   if (item.incomeBonus > 0) stats.push(`💰 Revenu passif +${Math.round(item.incomeBonus*100)}%`);
-  if (item.expBonus > 0)    stats.push(`🗺️ Expéditions +${Math.round(item.expBonus*100)}%`);
+
   document.getElementById('erStats').innerHTML = stats.join('<br>');
   document.getElementById('equipResultModal').classList.add('active');
 }
@@ -3008,14 +2837,14 @@ const FAMILIES = [
   { id:'araignee',icon:'🕷️', name:'Famille Araignée',    members:['araignee','aracrystal'],                 incBonus:0.30, expBonus:0.00, desc:'Revenu des Araignées +30%',               coinReward:400  },
   { id:'escargot',icon:'🐌', name:'Famille Escargot',    members:['escargot','escarcrys'],                  incBonus:0.30, expBonus:0.00, desc:'Revenu des Escargots +30%',                coinReward:400  },
   { id:'slime',   icon:'🫧', name:'Famille Slime',       members:['slime','slime_cosmique'],                incBonus:0.35, expBonus:0.00, desc:'Revenu des Slimes +35%',                   coinReward:500  },
-  { id:'feu',     icon:'🔥', name:'Êtres du Feu',        members:['gobfeu','lezard','epee_dragon','taureau_feu','phoenix'],         incBonus:0.10, expBonus:0.40, desc:'Revenu +10%, Expéditions +40%',            coinReward:1200 },
-  { id:'glace',   icon:'❄️', name:'Êtres de Glace',      members:['heriglace','spectre','loup_glace'],                   incBonus:0.20, expBonus:0.30, desc:'Revenu +20%, Expéditions +30%',            coinReward:2000 },
+  { id:'feu',     icon:'🔥', name:'Êtres du Feu',        members:['gobfeu','lezard','epee_dragon','taureau_feu','phoenix'],         incBonus:0.25, expBonus:0.00, desc:'Revenu des Êtres du Feu +25%',            coinReward:1200 },
+  { id:'glace',   icon:'❄️', name:'Êtres de Glace',      members:['heriglace','spectre','loup_glace'],                   incBonus:0.35, expBonus:0.00, desc:'Revenu des Êtres de Glace +35%',            coinReward:2000 },
   { id:'vegetal', icon:'🌿', name:'Monde Végétal',       members:['plante','radis'],                        incBonus:0.28, expBonus:0.00, desc:'Revenu des Végétaux +28%',                 coinReward:350  },
-  { id:'titans',  icon:'⚔️', name:'Ordre des Titans',    members:['cyclops','oikong','rhino'],              incBonus:0.00, expBonus:0.45, desc:'Expéditions des Titans +45%',              coinReward:1500 },
+  { id:'titans',  icon:'⚔️', name:'Ordre des Titans',    members:['cyclops','oikong','rhino'],              incBonus:0.40, expBonus:0.00, desc:'Revenu des Titans +40%',              coinReward:1500 },
   { id:'ombres',  icon:'👻', name:'Esprits des Ombres',  members:['onbrageur','oeil_astral'],               incBonus:0.38, expBonus:0.00, desc:'Revenu des Esprits +38%',                  coinReward:1200 },
-  { id:'maudits', icon:'💀', name:'Les Maudits',         members:['scruge','golem'],                        incBonus:0.22, expBonus:0.22, desc:'Revenu +22%, Expéditions +22%',            coinReward:800  },
-  { id:'electro', icon:'⚡', name:'Êtres Électriques',   members:['furet'],                                 incBonus:0.45, expBonus:0.30, desc:'Revenu +45%, Expéditions +30%',            coinReward:200  },
-  { id:'sables',  icon:'🏜️', name:'Créatures des Sables', members:['golem_sable','momie','tronado','vorace'],  incBonus:0.20, expBonus:0.35, desc:'Revenu +20%, Expéditions +35%',            coinReward:1800 },
+  { id:'maudits', icon:'💀', name:'Les Maudits',         members:['scruge','golem'],                        incBonus:0.35, expBonus:0.00, desc:'Revenu des Maudits +35%',            coinReward:800  },
+  { id:'electro', icon:'⚡', name:'Êtres Électriques',   members:['furet'],                                 incBonus:0.55, expBonus:0.00, desc:'Revenu Électrique +55%',            coinReward:200  },
+  { id:'sables',  icon:'🏜️', name:'Créatures des Sables', members:['golem_sable','momie','tronado','vorace'],  incBonus:0.35, expBonus:0.00, desc:'Revenu des Sables +35%',            coinReward:1800 },
   { id:'farfelus',icon:'🃏', name:'Les Farfelus',          members:['bob','bouffon','corborage'],               incBonus:0.30, expBonus:0.15, desc:'Revenu +30%, Expéditions +15%',            coinReward:700  },
   { id:'cristaux',icon:'💠', name:'Créatures Cristal',     members:['aracrystal','escarcrys','rat_crystal'],    incBonus:0.28, expBonus:0.20, desc:'Revenu +28%, Expéditions +20%',            coinReward:900  },
 ];
@@ -3282,7 +3111,6 @@ const ACHIEVEMENTS = [
   { id:'passive10k',  icon:'🌿', name:'Éleveur Prospère',      desc:'Accumuler 10 000 pièces passives',         reward:1000, cond:s => s.passiveEarned >= 10000 },
   { id:'rich',        icon:'🏦', name:'Riche à Millions',      desc:'Avoir 10 000 pièces en même temps',        reward:1000, cond:() => coins >= 10000 },
   { id:'spin1',       icon:'🎡', name:'Chanceux',              desc:'Utiliser la roue de la fortune',           reward:200,  cond:() => lastWheelSpin > 0 },
-  { id:'exp10',       icon:'🗺️', name:'Explorateur',           desc:'Terminer 10 expéditions',                  reward:1000, cond:s => (s.expeditionsDone||0) >= 10 },
   { id:'all_common',  icon:'🐛', name:'Maître du Commun',      desc:'Posséder toutes les créatures communes',   reward:800,  cond:() => CREATURES.filter(c=>c.rarity==='common').every(c=>(inventory[c.id]||0)>0) },
   { id:'all_leg',     icon:'👑', name:'Légende Absolue',       desc:'Posséder toutes les légendaires',          reward:12000,cond:() => CREATURES.filter(c=>c.rarity==='legendary').every(c=>(inventory[c.id]||0)>0) },
 ];
@@ -3483,7 +3311,12 @@ function openInspectModal(creatureId) {
 // Each prestige star requires more total coins earned than the last
 // Boosts are permanent and stack
 
-const PRESTIGE_COST = 50000; // fixed cost to trigger a renaissance
+// Coût de la Renaissance — augmente à chaque étoile
+const PRESTIGE_COSTS = [50000, 150000, 300000, 500000, 800000]; // étoile 1→5
+function getPrestigeCost() {
+  if (prestigeLevel >= PRESTIGE_COSTS.length) return Infinity; // MAX atteint
+  return PRESTIGE_COSTS[prestigeLevel];
+}
 const PRESTIGE_LEVELS = [
   { star:1, startCoins:2500,  incomeBonus:0.20, chestBonus:1,  label:'🌟 Étoile 1',   desc:'Recommence avec 2 500 🪙 + 20% revenu passif + 1 coffre Rare offert' },
   { star:2, startCoins:6000,  incomeBonus:0.50, chestBonus:2,  label:'🌟🌟 Étoile 2',  desc:'Recommence avec 6 000 🪙 + 50% revenu passif + 2 coffres Rares offerts' },
@@ -3535,23 +3368,23 @@ function updatePrestigeSection() {
     return;
   }
 
-  const canPrestige = coins >= PRESTIGE_COST;
-  const progress = Math.min(1, coins / PRESTIGE_COST);
+  const canPrestige = coins >= getPrestigeCost();
+  const progress = Math.min(1, coins / getPrestigeCost());
   if (fill) fill.style.width = (progress * 100).toFixed(1) + '%';
 
   if (desc) desc.textContent = next.desc;
   if (btn) {
     btn.disabled = !canPrestige;
     btn.textContent = canPrestige
-      ? '🌟 Lancer la Renaissance ! (-' + PRESTIGE_COST.toLocaleString('fr-FR') + ' 🪙)'
-      : '🌟 Renaissance (' + PRESTIGE_COST.toLocaleString('fr-FR') + ' 🪙)';
+      ? '🌟 Lancer la Renaissance ! (-' + getPrestigeCost().toLocaleString('fr-FR') + ' 🪙)'
+      : '🌟 Renaissance (' + getPrestigeCost().toLocaleString('fr-FR') + ' 🪙)';
   }
   if (lockMsg) {
     if (canPrestige) {
       lockMsg.textContent = '✅ Tu as assez de pièces !';
       lockMsg.style.color = '#4ade80';
     } else {
-      const missing = (PRESTIGE_COST - coins).toLocaleString('fr-FR');
+      const missing = (getPrestigeCost() - coins).toLocaleString('fr-FR');
       lockMsg.textContent = 'Il te manque ' + missing + ' 🪙 pour te lancer.';
       lockMsg.style.color = 'var(--text2)';
     }
@@ -3564,7 +3397,7 @@ function openPrestigeModal() {
   const list = document.getElementById('prestigeGainsList');
   const bonusMultStr = '+' + Math.round(next.incomeBonus * 100) + '% revenu passif (permanent, cumulatif)';
   const rows = [
-    { icon:'💸', label:'Coût de la Renaissance', val: PRESTIGE_COST.toLocaleString('fr-FR') + ' 🪙' },
+    { icon:'💸', label:'Coût de la Renaissance', val: getPrestigeCost().toLocaleString('fr-FR') + ' 🪙' },
     { icon:'🪙', label:'Pièces de départ', val: next.startCoins.toLocaleString('fr-FR') + ' 🪙' },
     { icon:'⚡', label:'Bonus revenu passif', val: bonusMultStr },
     { icon:'📦', label:'Coffres offerts', val: next.chestBonus + ' coffre(s) Rare' + (next.star === 5 ? ' + 1 Légendaire 🔥' : '') },
@@ -3580,7 +3413,7 @@ function openPrestigeModal() {
 
 function confirmPrestige() {
   const next = getNextPrestige();
-  if (!next || coins < PRESTIGE_COST) { toast('Pas assez de pièces !'); return; }
+  if (!next || coins < getPrestigeCost()) { toast('Pas assez de pièces !'); return; }
   document.getElementById('prestigeModal').style.display = 'none';
 
   prestigeLevel++;
@@ -3589,7 +3422,6 @@ function confirmPrestige() {
   inventory = {};
   ownedChests = [];
   creatureLevels = {};
-  expeditions = [];
   claimedSetBonuses = {};
   claimedFamilyBonuses = {};
   dailyQuestIds = [];
@@ -3797,7 +3629,7 @@ function showTab(name){
   if(name==='collection'){showCollView('bestiaire');}
   if(name==='home')renderHome();
   if(name==='quests'){renderQuests();renderStatsGrid();renderAchievements();}
-  if(name==='aventures'){renderExpeditions();renderEventBanners();drawWheel(wheelAngle);updateWheelBtn();}
+  if(name==='aventures'){renderEventBanners();drawWheel(wheelAngle);updateWheelBtn();}
 }
 
 // ── BUYER SYSTEM ──
@@ -4005,7 +3837,6 @@ window.addEventListener('DOMContentLoaded',function(){
   document.getElementById('btn-coll-familles').addEventListener('click',()=>showCollView('familles'));
   document.getElementById('tab-quests-btn').addEventListener('click',()=>showTab('quests'));
   document.getElementById('tab-aventures-btn').addEventListener('click',()=>showTab('aventures'));
-  document.getElementById('btn-new-expedition').addEventListener('click',openExpeditionPicker);
   document.getElementById('inspectClose').addEventListener('click', () => {
     document.getElementById('inspectModal').classList.remove('active');
   });
@@ -4058,6 +3889,18 @@ window.addEventListener('DOMContentLoaded',function(){
 
   document.getElementById('codeBtn').addEventListener('click', redeemCode);
   document.getElementById('codeInput').addEventListener('keydown', e => { if(e.key==='Enter') redeemCode(); });
+  // Toggle popup
+  document.getElementById('codeTriggerBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const p = document.getElementById('codePopup');
+    const open = p.style.display === 'block';
+    p.style.display = open ? 'none' : 'block';
+    if (!open) document.getElementById('codeInput').focus();
+  });
+  document.addEventListener('click', (e) => {
+    const popup = document.getElementById('codePopup');
+    if (!popup.contains(e.target) && e.target.id !== 'codeTriggerBtn') popup.style.display = 'none';
+  });
   document.getElementById('btnSpinWheel').addEventListener('click',spinWheel);
   document.getElementById('freeChestBtn').addEventListener('click',claimFreeChest);
   document.getElementById('freeChestBtn2').addEventListener('click',claimFreeChest);
@@ -4123,7 +3966,6 @@ window.addEventListener('DOMContentLoaded',function(){
   initDailyQuests();
   initDailyEvent();
   updateFreeChestBtns();
-  renderExpeditions();
   initWheel();
   renderAchievements();
   checkAchievements();
