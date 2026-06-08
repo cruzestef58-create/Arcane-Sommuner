@@ -3229,13 +3229,16 @@ function renderShopRates() {
   const RLABEL = { common:'Commun', rare:'Rare', epic:'Épique', legendary:'Légend.', mythic:'🩷 Mythique', unique:'✦ UNIQUE' };
   const RCLASS = { mythic:'rb-mythic', unique:'rb-unique' };
   const BOX_IDS = ['starter','mystic','epic','legendary','scroll','cosmic'];
+  const mythicCount = countMythicEquipped();
+  const creatureUniqueBonus = mythicCount * 0.0002;
+  const equipUniqueBonus   = mythicCount * 0.004;
   BOX_IDS.forEach(boxId => {
     const el = document.getElementById('rates-' + boxId);
     if (!el) return;
     const box = BOXES[boxId];
     if (!box) return;
-    el.innerHTML = Object.entries(box.rates)
-      .filter(([,v]) => v > 0)
+    let html = Object.entries(box.rates)
+      .filter(([r,v]) => v > 0 && r !== 'mythic')
       .sort((a,b) => {
         const order = ['common','rare','epic','legendary','mythic','unique'];
         return order.indexOf(a[0]) - order.indexOf(b[0]);
@@ -3244,18 +3247,29 @@ function renderShopRates() {
         const cls = RCLASS[rarity] || '';
         const label = RLABEL[rarity] || rarity;
         const color = RCOLOR[rarity] || '#fff';
-        // Format pct
-        let pctStr = pct >= 1 ? pct + '%' : pct >= 0.01 ? pct.toFixed(3) + '%' : pct.toFixed(4) + '%';
-        return `<span class="rate-badge ${cls}" style="color:${color}">${label} ${pctStr}</span>`;
+        let realPct = pct;
+        if (rarity === 'unique' && creatureUniqueBonus > 0) realPct += creatureUniqueBonus;
+        let pctStr = realPct >= 1 ? realPct + '%' : realPct >= 0.01 ? realPct.toFixed(4) + '%' : realPct.toFixed(5) + '%';
+        const bonusTip = (rarity === 'unique' && creatureUniqueBonus > 0)
+          ? ` <span style="color:#ff4ecd;font-size:0.68rem">(+${creatureUniqueBonus.toFixed(4)}% 🩷×${mythicCount})</span>`
+          : '';
+        return `<span class="rate-badge ${cls}" style="color:${color}">${label} ${pctStr}${bonusTip}</span>`;
       }).join('');
+    el.innerHTML = html;
   });
-  // Also handle equip box separately
+  // Equip box
   const eqEl = document.getElementById('rates-equip');
   if (eqEl) {
-    const eqRates = { common:50, rare:30, epic:15, legendary:5 };
-    eqEl.innerHTML = Object.entries(eqRates).map(([r,p]) =>
-      `<span class="rate-badge" style="color:${RCOLOR[r]}">${RLABEL[r]} ${p}%</span>`
-    ).join('');
+    const eqRates = EQUIP_BOX_DEF.rates;
+    eqEl.innerHTML = Object.entries(eqRates).map(([r,p]) => {
+      let realP = p;
+      if (r === 'unique' && equipUniqueBonus > 0) realP += equipUniqueBonus;
+      let pStr = realP >= 1 ? realP + '%' : realP >= 0.01 ? realP.toFixed(4) + '%' : realP.toFixed(5) + '%';
+      const bonusTip = (r === 'unique' && equipUniqueBonus > 0)
+        ? ` <span style="color:#ff4ecd;font-size:0.68rem">(+${equipUniqueBonus.toFixed(4)}% 🩷×${mythicCount})</span>`
+        : '';
+      return `<span class="rate-badge" style="color:${RCOLOR[r]||'#fff'}">${RLABEL[r]||r} ${pStr}${bonusTip}</span>`;
+    }).join('');
   }
 }
 
@@ -3668,6 +3682,7 @@ function showTab(name){
   if(name==='home')renderHome();
   if(name==='quests'){renderQuests();renderStatsGrid();renderAchievements();}
   if(name==='aventures'){renderEventBanners();drawWheel(wheelAngle);updateWheelBtn();}
+  if(name==='shop')renderShopRates();
 }
 
 // ── BUYER SYSTEM ──
@@ -3847,7 +3862,7 @@ function startPassiveIncome() {
       const earned = Math.floor(incomeAccum);
       incomeAccum -= earned;
       setCoins(coins + earned);
-      spawnFloatingCoin(earned);
+      if (earned >= 50) spawnFloatingCoin(earned);
       trackStat('passiveEarned', earned);
     }
     updateIncomeDisplay();
