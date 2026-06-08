@@ -1834,7 +1834,7 @@ async function triggerOpenBox(boxType){
 // ── ROULETTE ──
 function buildRouletteTrack(trackEl, target, mini=false) {
   trackEl.innerHTML = '';
-  const COUNT=48, TARGET_I=42, ITEM_W=mini?82:104;
+  const COUNT=48, TARGET_I=42, ITEM_W=104;
   for (let i=0; i<COUNT; i++) {
     const c = (i===TARGET_I) ? target : pickVisual();
     const div = document.createElement('div');
@@ -1862,7 +1862,7 @@ function spinRoulette(target){
     document.body.style.overflow='hidden';
     track.style.transition='none'; track.style.transform='translateX(0)';
     const cW = document.getElementById('rouletteSlot1').offsetWidth;
-    const finalX = -(42*ITEM_W - cW/2 + 50 + (Math.random()*40-20));
+    const finalX = -(42*ITEM_W + ITEM_W/2 - cW/2); // centrage exact item 42
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       track.style.transition='transform 4s cubic-bezier(0.05,0.85,0.25,1)';
       track.style.transform='translateX('+finalX+'px)';
@@ -1880,7 +1880,7 @@ function spinRoulette3(targets) {
       slot.style.display = '';
       slot.classList.add('mini');
     });
-    const ITEM_W = 82;
+    const ITEM_W = 104; // même taille CSS que le track ×1
     const tracks = [1,2,3].map(n => document.getElementById('rouletteTrack'+n));
     tracks.forEach((track, i) => buildRouletteTrack(track, targets[i], true));
     overlay.classList.add('active');
