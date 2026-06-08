@@ -3477,12 +3477,7 @@ function openInspectModal(creatureId) {
   document.getElementById('inspectModal').classList.add('active');
 }
 
-document.getElementById('inspectClose').addEventListener('click', () => {
-  document.getElementById('inspectModal').classList.remove('active');
-});
-document.getElementById('inspectModal').addEventListener('click', function(e) {
-  if (e.target === this) this.classList.remove('active');
-});
+
 
 // ── RENAISSANCE (PRESTIGE) ──
 // Each prestige star requires more total coins earned than the last
@@ -4011,6 +4006,12 @@ window.addEventListener('DOMContentLoaded',function(){
   document.getElementById('tab-quests-btn').addEventListener('click',()=>showTab('quests'));
   document.getElementById('tab-aventures-btn').addEventListener('click',()=>showTab('aventures'));
   document.getElementById('btn-new-expedition').addEventListener('click',openExpeditionPicker);
+  document.getElementById('inspectClose').addEventListener('click', () => {
+    document.getElementById('inspectModal').classList.remove('active');
+  });
+  document.getElementById('inspectModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+  });
 
   // ── SECRET CODES ──
   const SECRET_CODES = {
