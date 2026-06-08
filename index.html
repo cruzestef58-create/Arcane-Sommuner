@@ -110,8 +110,7 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .shop-card:hover.legendary{box-shadow:0 8px 30px rgba(245,158,11,0.3);}
 .shop-img-wrap{width:140px;height:140px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;}
 .shop-img-wrap img{width:130px;height:130px;object-fit:contain;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.5));}
-.shop-name{font-size:1.15rem;font-weight:800;margin-bottom:6px;}
-.shop-desc{font-size:0.8rem;color:var(--text2);margin-bottom:14px;line-height:1.5;}
+.shop-name{font-size:1.05rem;font-weight:800;margin-bottom:8px;}
 .rate-badges{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:14px;}
 .rate-badge{padding:3px 9px;border-radius:20px;font-size:0.72rem;font-weight:700;background:rgba(255,255,255,0.07);}
 .price-tag{font-size:1.1rem;font-weight:800;color:var(--legendary,#f59e0b);margin-bottom:14px;}
@@ -219,10 +218,13 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .coo-count{font-size:0.72rem;color:rgba(255,255,255,0.3);font-weight:600;letter-spacing:1px;}
 
 /* ── ROULETTE ── */
-#rouletteOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;
-  align-items:center;justify-content:center;flex-direction:column;gap:16px;overflow:hidden;}
-#rouletteOverlay.active{display:flex;}
-#rouletteSlots{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;}
+#rouletteOverlay{display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;
+  align-items:center;justify-content:center;flex-direction:column;gap:16px;overflow:hidden;
+  visibility:hidden;opacity:0;pointer-events:none;}
+#rouletteOverlay.active{visibility:visible;opacity:1;pointer-events:auto;
+  animation:roulette-in 0.15s ease forwards;}
+@keyframes roulette-in{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}
+#rouletteSlots{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;align-self:center;}
 .roulette-title{font-size:1.3rem;font-weight:700;color:#a855f7;letter-spacing:2px;text-transform:uppercase;}
 .roulette-container{width:640px;max-width:90vw;height:120px;overflow:hidden;border-radius:10px;
   border:2px solid #a855f7;position:relative;background:#0d0d1a;}
@@ -958,9 +960,8 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <div class="shop-card starter">
       <div class="shop-img-wrap"><img id="img_shop_starter" src="" alt="Coffre de Bois"></div>
       <div class="shop-name">Coffre de Bois</div>
-      <div class="shop-desc">Le classique pour débuter. Des créatures communes, parfois une surprise.</div>
       <div class="rate-badges" id="rates-starter"></div>
-      <div class="price-tag">🪙 100 pièces</div>
+      <div class="price-tag">🪙 100</div>
       <button class="btn-buy" data-box="starter" data-qty="1">Acheter ×1</button>
       <div class="buy-multi">
         <button class="btn-buy-x3" data-box="starter" data-qty="3">×3 — 270🪙</button>
@@ -971,9 +972,8 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <div class="shop-card mystic">
       <div class="shop-img-wrap"><img id="img_shop_mystic" src="" alt="Coffre Mystique"></div>
       <div class="shop-name">Coffre Mystique</div>
-      <div class="shop-desc">Imprégné de magie. Les rares et épiques sont nettement plus fréquents.</div>
       <div class="rate-badges" id="rates-mystic"></div>
-      <div class="price-tag">🪙 400 pièces</div>
+      <div class="price-tag">🪙 400</div>
       <button class="btn-buy" data-box="mystic" data-qty="1">Acheter ×1</button>
       <div class="buy-multi">
         <button class="btn-buy-x3" data-box="mystic" data-qty="3">×3 — 1 080🪙</button>
@@ -984,9 +984,8 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <div class="shop-card epic-box">
       <div class="shop-img-wrap"><img id="img_shop_epic" src="" alt="Coffre Épique"></div>
       <div class="shop-name">Coffre Épique</div>
-      <div class="shop-desc">Forged in shadow magic. Épiques garantis, légendaires accessibles.</div>
       <div class="rate-badges" id="rates-epic"></div>
-      <div class="price-tag">🪙 900 pièces</div>
+      <div class="price-tag">🪙 900</div>
       <button class="btn-buy" data-box="epic" data-qty="1">Acheter ×1</button>
       <div class="buy-multi">
         <button class="btn-buy-x3" data-box="epic" data-qty="3">×3 — 2 430🪙</button>
@@ -996,9 +995,8 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <div class="shop-card legendary">
       <div class="shop-img-wrap"><img id="img_shop_legendary" src="" alt="Coffre Légendaire"></div>
       <div class="shop-name">Relique Ancienne</div>
-      <div class="shop-desc">Un artefact des temps primordiaux. Les légendes y vivent — si tu as les moyens.</div>
       <div class="rate-badges" id="rates-legendary"></div>
-      <div class="price-tag">🪙 2 500 pièces</div>
+      <div class="price-tag">🪙 2 500</div>
       <button class="btn-buy" data-box="legendary" data-qty="1">Acheter ×1</button>
       <div class="buy-multi">
         <button class="btn-buy-x3" data-box="legendary" data-qty="3">×3 — 6 750🪙</button>
@@ -1008,9 +1006,8 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <div class="shop-card scroll">
       <div class="shop-img-wrap"><img id="img_shop_scroll" src="" alt="Parchemin d'Invocation"></div>
       <div class="shop-name">📜 Parchemin d'Invocation</div>
-      <div class="shop-desc">Un parchemin ancien chargé de magie pure. Épiques et légendaires garantis — pour les vrais invocateurs.</div>
       <div class="rate-badges" id="rates-scroll"></div>
-      <div class="price-tag">🪙 5 000 pièces</div>
+      <div class="price-tag">🪙 5 000</div>
       <button class="btn-buy" data-box="scroll" data-qty="1">Invoquer ×1</button>
       <div class="buy-multi">
         <button class="btn-buy-x3" data-box="scroll" data-qty="3">×3 — 13 500🪙</button>
@@ -1020,23 +1017,21 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <div class="shop-card cosmic-box" id="shop-cosmic-card">
       <div class="shop-img-wrap"><img id="img_shop_cosmic" src="" alt="Cristal Cosmique"></div>
       <div class="shop-name">💎 Cristal Cosmique</div>
-      <div class="shop-desc">Un artefact d'un autre univers. Contient des créatures mythiques — et une infime chance d'invoquer le <strong style="color:#fff">Dieu de l'Univers</strong>.</div>
       <div class="rate-badges" id="rates-cosmic"></div>
-      <div class="price-tag">🪙 50 000 pièces</div>
-      <div style="display:flex;gap:8px;flex-direction:column;">
-        <button class="btn-buy" data-box="cosmic" data-qty="1">💎 Invoquer ×1 — 50 000 🪙</button>
-        <button class="btn-buy" data-box="cosmic" data-qty="3" style="background:linear-gradient(135deg,#6d28d9,#a855f7);">🎲 Invoquer ×3 — 150 000 🪙</button>
+      <div class="price-tag">🪙 50 000</div>
+      <button class="btn-buy" data-box="cosmic" data-qty="1">Invoquer ×1</button>
+      <div class="buy-multi">
+        <button class="btn-buy-x3" data-box="cosmic" data-qty="3">×3 — 150 000🪙</button>
       </div>
     </div>
 
         <div class="shop-card equip-box">
       <div class="shop-img-wrap"><img id="img_shop_eqbox" src="" alt="Coffre d'Équipement"></div>
       <div class="shop-name">⚔️ Coffre d'Équipement</div>
-      <div class="shop-desc">Contient un équipement aléatoire pour renforcer tes créatures. Plus ton équipement est rare, plus tes bonus sont puissants !</div>
       <div class="rate-badges" id="rates-equip"></div>
-      <div class="price-tag">🪙 600 pièces</div>
+      <div class="price-tag">🪙 600</div>
       <button class="btn-buy" data-box="equip" data-qty="1">Ouvrir ×1</button>
-      <button class="btn-buy-x3" data-box="equip" data-qty="3" style="margin-top:6px;width:100%;padding:9px 0;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);color:#34d399;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.82rem">Ouvrir ×3 (-10%)</button>
+      <div class="buy-multi"><button class="btn-buy-x3" data-box="equip" data-qty="3">×3 (-10%)</button></div>
     </div>
 
   </div>
@@ -1784,6 +1779,8 @@ async function triggerOpenBox3(boxType) {
     trackStat('earned', 0);
   });
   saveGame();
+  updateTaxDisplay();
+  updateIncomeDisplay();
   showTripleResult(results);
   spinning = false;
 }
@@ -1888,6 +1885,7 @@ function spinRoulette3(targets) {
     tracks.forEach((track, i) => buildRouletteTrack(track, targets[i], true));
     overlay.classList.add('active');
     document.body.style.overflow='hidden';
+    void overlay.offsetHeight; // forcer reflow
     tracks.forEach(t => { t.style.transition='none'; t.style.transform='translateX(0)'; });
     const cW = document.getElementById('rouletteSlot1').offsetWidth;
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -3804,7 +3802,9 @@ function getTaxLevel() {
 
 let taxNextIn = 60; // seconds until next full-minute tax collection
 
+let _taxStarted = false;
 function startTaxSystem() {
+  if (_taxStarted) return; _taxStarted = true;
   setInterval(() => {
     const taxPerMin = calculateTaxPerMin();
     if (taxPerMin === 0) {
@@ -3851,7 +3851,7 @@ function collectTax(amount) {
     if (commons.length > 0) {
       const victim = commons[0].c;
       removeCreatureFromInventory(victim.id, 1);
-      renderInventory(); renderCollection(); updateIncomeDisplay();
+      renderInventory(); renderCollection(); updateIncomeDisplay(); updateTaxDisplay();
       showTaxWarning(`💸 Taxe impayée ! ${victim.name} a été saisie !`);
     } else {
       showTaxWarning(`💸 Taxe impayée ! Attention à tes finances !`);
