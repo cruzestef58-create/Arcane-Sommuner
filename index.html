@@ -984,7 +984,9 @@ function renderHome(){
     return;
   }
   grid.innerHTML=ownedChests.map((ch,i)=>{
-    const box=BOXES[ch.type];
+    const isEquip=(ch.type==='equip');
+    const box=isEquip?{cssClass:'equip-home',imgKey:'eq_box',name:"Coffre d'Équipement"}:BOXES[ch.type];
+    if(!box)return'';
     return `<div class="chest-card ${box.cssClass}" data-idx="${i}">
       <div class="chest-img-wrap"><img src="${IMG[box.imgKey]}" alt="${box.name}"></div>
       <div class="chest-name">${box.name}</div>
