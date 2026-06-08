@@ -797,10 +797,7 @@ function showResult(c,rarity,isNew){
 function closeResult(){document.getElementById('resultModal').classList.remove('active');pending=null;}
 function sellResult(){
   if(!pending)return;
-  // Add to inventory first so buyer modal can remove it
-  const c = pending.creature;
-  inventory[c.id] = (inventory[c.id] || 0) + 1;
-  openBuyerModal(c, 'result');
+  openBuyerModal(pending.creature, 'result');
 }
 
 // ── INVENTORY ──
@@ -870,7 +867,7 @@ const ALL_BUYERS = [
   { id:'noble',       avatar:'👑', name:'Noble Seigneur',       desc:'Très riche, mais difficile. Paie bien tout sauf les communs.', mult:{ common:0.4, rare:1.4, epic:2.0, legendary:2.2 } },
   { id:'smuggler',    avatar:'🦝', name:'Contrebandier',        desc:'Revend en secret. Bons prix pour les communs, méfiant pour le reste.', mult:{ common:1.8, rare:1.1, epic:0.75, legendary:0.65 } },
   { id:'brocanteur',  avatar:'🧹', name:'Vieux Brocanteur',     desc:'Propose toujours des prix dérisoires. À éviter...', mult:{ common:0.45, rare:0.45, epic:0.45, legendary:0.45 } },
-  { id:'druid',       avatar:'🌿', name:'Druide Ancien',        desc:'Ne s'intéresse qu'aux créatures naturelles épiques.', mult:{ common:0.9, rare:1.1, epic:2.2, legendary:1.0 } },
+  { id:'druid',       avatar:'🌿', name:'Druide Ancien',        desc:"Ne s'intéresse qu'aux créatures naturelles épiques.", mult:{ common:0.9, rare:1.1, epic:2.2, legendary:1.0 } },
   { id:'pirate',      avatar:'🏴‍☠️', name:'Capitaine Pirate',   desc:'Fait une offre au hasard entre 80% et 200% du prix !', mult:null },
 ];
 
@@ -909,17 +906,17 @@ function openBuyerModal(creature, source) {
     const cls = getMultClass(mult);
     const pct = Math.round(mult * 100);
     const isRandom = buyer.id === 'alchemist' || buyer.id === 'pirate';
-    return \`<div class="buyer-card" data-price="\${offered}" data-buyer="\${buyer.id}">
-      <div class="buyer-avatar">\${buyer.avatar}</div>
+    return `<div class="buyer-card" data-price="${offered}" data-buyer="${buyer.id}">
+      <div class="buyer-avatar">${buyer.avatar}</div>
       <div class="buyer-info">
-        <div class="buyer-name">\${buyer.name}</div>
-        <div class="buyer-desc">\${buyer.desc}</div>
+        <div class="buyer-name">${buyer.name}</div>
+        <div class="buyer-desc">${buyer.desc}</div>
       </div>
       <div class="buyer-price">
-        <div class="price-val \${cls}">\${offered.toLocaleString('fr-FR')} 🪙</div>
-        <div class="price-mult \${cls}">\${isRandom ? '🎲 aléatoire' : (pct >= 100 ? '+' : '') + (pct-100) + '%'}</div>
+        <div class="price-val ${cls}">${offered.toLocaleString('fr-FR')} 🪙</div>
+        <div class="price-mult ${cls}">${isRandom ? '🎲 aléatoire' : (pct >= 100 ? '+' : '') + (pct-100) + '%'}</div>
       </div>
-    </div>\`;
+    </div>`;
   }).join('');
 
   // Add click listeners
