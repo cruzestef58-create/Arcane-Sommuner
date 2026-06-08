@@ -575,6 +575,27 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .ach-item .ai-reward{font-size:0.72rem;font-weight:700;color:#fbbf24;flex-shrink:0;}
 .ach-item .ai-lock{font-size:0.9rem;opacity:0.3;}
 
+
+/* ── TAX SYSTEM ── */
+.tax-wrap{display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:700;padding:5px 10px;border-radius:8px;border:1px solid;transition:all 0.4s;}
+.tax-wrap.free   {color:#4ade80;border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.08);}
+.tax-wrap.low    {color:#fbbf24;border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.08);}
+.tax-wrap.medium {color:#fb923c;border-color:rgba(251,146,60,0.3);background:rgba(251,146,60,0.08);}
+.tax-wrap.high   {color:#f87171;border-color:rgba(248,113,113,0.4);background:rgba(248,113,113,0.1);}
+.tax-wrap.danger {color:#ef4444;border-color:rgba(239,68,68,0.6);background:rgba(239,68,68,0.15);animation:tax-danger 0.6s ease-in-out infinite;}
+@keyframes tax-danger{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
+
+.tax-info-panel{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:18px;}
+.tax-info-panel .tip-title{font-weight:900;font-size:0.95rem;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.tax-info-panel .tip-row{display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.tax-info-panel .tip-row:last-child{border-bottom:none;}
+.tax-info-panel .tip-label{color:var(--text2);}
+.tax-info-panel .tip-val{font-weight:800;}
+.tax-tier-bar{display:flex;gap:4px;margin-top:12px;}
+.tax-tier{flex:1;padding:6px 4px;border-radius:6px;text-align:center;font-size:0.65rem;font-weight:800;}
+
+.tax-warning-toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:rgba(239,68,68,0.95);color:#fff;font-weight:800;font-size:0.9rem;padding:10px 22px;border-radius:12px;z-index:800;animation:slide-in-right 0.3s;box-shadow:0 4px 20px rgba(239,68,68,0.5);}
+
 </style>
 </head>
 <body>
@@ -584,9 +605,12 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <img id="img_logo" src="" alt="logo">
     <span class="logo-text">ARCANE SUMMONER</span>
   </div>
-  <div style="display:flex;align-items:center;gap:12px;">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
     <div class="income-wrap" id="incomeWrap" style="display:none">
       ⚡ <span id="incomeDisplay">0</span><span>/sec</span>
+    </div>
+    <div class="tax-wrap free" id="taxWrap" style="display:none">
+      🏛️ <span id="taxDisplay">0</span><span>/min</span>
     </div>
     <div class="coins-wrap">
       <img id="img_coin" src="" alt="">
@@ -611,6 +635,22 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <span id="chestCount">0 coffre(s)</span>
   </div>
   <div id="eventBanner" style="display:none"></div>
+  <div id="taxInfoBanner" style="display:none;margin-bottom:12px">
+    <div class="tax-info-panel">
+      <div class="tip-title">🏛️ Taxe d'entrepôt <span id="taxStatusBadge" style="font-size:0.72rem;padding:2px 8px;border-radius:10px;margin-left:4px"></span></div>
+      <div class="tip-row"><span class="tip-label">Créatures en stock</span><span class="tip-val" id="taxCreatureCount">0</span></div>
+      <div class="tip-row"><span class="tip-label">Franchise (gratuit)</span><span class="tip-val" style="color:#4ade80">5 créatures</span></div>
+      <div class="tip-row"><span class="tip-label">Taxe actuelle</span><span class="tip-val" id="taxCurrentVal">0 🪙/min</span></div>
+      <div class="tip-row"><span class="tip-label">Prochaine collecte dans</span><span class="tip-val" id="taxNextTimer">—</span></div>
+      <div class="tax-tier-bar">
+        <div class="tax-tier" style="background:rgba(74,222,128,0.2);color:#4ade80">≤5<br>Gratuit</div>
+        <div class="tax-tier" style="background:rgba(251,191,36,0.2);color:#fbbf24">6-10<br>Faible</div>
+        <div class="tax-tier" style="background:rgba(251,146,60,0.2);color:#fb923c">11-20<br>Moyen</div>
+        <div class="tax-tier" style="background:rgba(248,113,113,0.2);color:#f87171">21-30<br>Élevé</div>
+        <div class="tax-tier" style="background:rgba(239,68,68,0.25);color:#ef4444">31+<br>Danger</div>
+      </div>
+    </div>
+  </div>
   <div class="free-chest-bar"><button class="btn-free-chest waiting" id="freeChestBtn" disabled><span id="freeChestLabel">⏳ Chargement...</span></button></div>
   <div class="chest-grid" id="chestGrid"></div>
 </div>
@@ -1171,6 +1211,7 @@ async function triggerOpenBox(boxType){
   if(rarity==='legendary')trackStat('gotLegendary');
   renderInventory();renderCollection();
   updateIncomeDisplay();
+  updateTaxDisplay();
   saveGame();
   spinning=false;
 }
@@ -1321,7 +1362,7 @@ function sellAll(){
     saveGame();
     toast('💰 Vendu pour '+total.toLocaleString('fr-FR')+' pièces !');
   } else toast('Aucun commun à vendre.');
-  renderInventory();renderCollection();
+  renderInventory();renderCollection();updateTaxDisplay();
 }
 
 // ── COLLECTION ──
@@ -2537,6 +2578,166 @@ function showCollView(view) {
   if (view==='familles')  renderFamilies();
 }
 
+
+// ── TAX SYSTEM ──
+// Franchise: 5 creatures free. Above that, progressive tax per creature/min
+// Tier thresholds for extra creatures (above 5):
+//   1st-5th extra (6-10): 3/creature/min
+//   6th-15th extra (11-20): 10/creature/min
+//   16th-25th extra (21-30): 28/creature/min
+//   26th+ extra (31+): 70/creature/min
+
+const TAX_FREE_THRESHOLD = 5;
+const TAX_TIERS = [
+  { max:5,   rate:3  },
+  { max:15,  rate:10 },
+  { max:25,  rate:28 },
+  { max:Infinity, rate:70 },
+];
+
+let taxAccum = 0; // accumulates per second like income
+let taxWarningShown = false;
+
+function getTotalCreatureCount() {
+  return Object.values(inventory).reduce((s, q) => s + q, 0);
+}
+
+function calculateTaxPerMin() {
+  const total = getTotalCreatureCount();
+  const extra = Math.max(0, total - TAX_FREE_THRESHOLD);
+  if (extra === 0) return 0;
+  let tax = 0, remaining = extra;
+  let prev = 0;
+  for (const tier of TAX_TIERS) {
+    const slots = tier.max - prev;
+    const used = Math.min(remaining, slots);
+    tax += used * tier.rate;
+    remaining -= used;
+    prev = tier.max;
+    if (remaining <= 0) break;
+  }
+  return tax;
+}
+
+function getTaxLevel() {
+  const total = getTotalCreatureCount();
+  if (total <= 5)  return 'free';
+  if (total <= 10) return 'low';
+  if (total <= 20) return 'medium';
+  if (total <= 30) return 'high';
+  return 'danger';
+}
+
+let taxNextIn = 60; // seconds until next full-minute tax collection
+
+function startTaxSystem() {
+  setInterval(() => {
+    const taxPerMin = calculateTaxPerMin();
+    if (taxPerMin === 0) { taxNextIn = 60; updateTaxDisplay(); return; }
+
+    taxNextIn = Math.max(0, taxNextIn - 1);
+
+    // Warn 10s before collection
+    if (taxNextIn <= 10 && taxNextIn > 0 && !taxWarningShown) {
+      const due = taxPerMin;
+      if (coins < due) {
+        taxWarningShown = true;
+        showTaxWarning(`⚠️ Taxe dans ${taxNextIn}s — Il te manque des pièces !`);
+      }
+    }
+
+    if (taxNextIn <= 0) {
+      taxNextIn = 60;
+      taxWarningShown = false;
+      collectTax(taxPerMin);
+    }
+
+    updateTaxDisplay();
+  }, 1000);
+}
+
+function collectTax(amount) {
+  if (amount <= 0) return;
+  if (coins >= amount) {
+    setCoins(coins - amount);
+    spawnTaxFloat(-amount);
+    toast(`🏛️ Taxe prélevée : -${amount.toLocaleString('fr-FR')} 🪙`);
+  } else {
+    // Can't fully pay — lose cheapest creature
+    const paid = coins;
+    setCoins(0);
+    if (paid > 0) spawnTaxFloat(-paid);
+    // Lose 1 common creature (cheapest)
+    const commons = Object.entries(inventory)
+      .map(([id, qty]) => ({ c: CREATURES.find(x => x.id === id), qty }))
+      .filter(e => e.c && e.qty > 0 && e.c.rarity === 'common')
+      .sort((a, b) => a.c.sell - b.c.sell);
+    if (commons.length > 0) {
+      const victim = commons[0].c;
+      inventory[victim.id]--;
+      if (inventory[victim.id] <= 0) delete inventory[victim.id];
+      renderInventory(); renderCollection(); updateIncomeDisplay();
+      showTaxWarning(`💸 Taxe impayée ! ${victim.name} a été saisie !`);
+    } else {
+      showTaxWarning(`💸 Taxe impayée ! Attention à tes finances !`);
+    }
+    toast(`💸 Ruiné ! Taxe impayée — pièces insuffisantes !`);
+  }
+  saveGame();
+}
+
+function spawnTaxFloat(amount) {
+  const el = document.createElement('div');
+  el.className = 'float-coin';
+  el.style.color = '#f87171';
+  el.textContent = amount.toLocaleString('fr-FR') + ' 🏛️';
+  const rect = document.querySelector('.coins-wrap').getBoundingClientRect();
+  el.style.left = (rect.left + Math.random() * rect.width * 0.5) + 'px';
+  el.style.top  = (rect.top - 10) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1900);
+}
+
+function showTaxWarning(msg) {
+  const el = document.createElement('div');
+  el.className = 'tax-warning-toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.transition='opacity 0.5s'; el.style.opacity='0'; setTimeout(()=>el.remove(),500); }, 3000);
+}
+
+function updateTaxDisplay() {
+  const taxPerMin = calculateTaxPerMin();
+  const wrap = document.getElementById('taxWrap');
+  const disp = document.getElementById('taxDisplay');
+  const banner = document.getElementById('taxInfoBanner');
+  if (!wrap) return;
+
+  if (taxPerMin === 0) {
+    wrap.style.display = 'none';
+    if (banner) banner.style.display = 'none';
+    return;
+  }
+
+  wrap.style.display = 'flex';
+  wrap.className = 'tax-wrap ' + getTaxLevel();
+  disp.textContent = taxPerMin.toLocaleString('fr-FR');
+
+  // Update home panel
+  if (banner) {
+    banner.style.display = 'block';
+    const total = getTotalCreatureCount();
+    const lvl = getTaxLevel();
+    const labels = { low:'🟡 Faible', medium:'🟠 Moyen', high:'🔴 Élevé', danger:'💀 DANGER' };
+    const colors = { low:'rgba(251,191,36,0.2)', medium:'rgba(251,146,60,0.2)', high:'rgba(248,113,113,0.2)', danger:'rgba(239,68,68,0.3)' };
+    const badge = document.getElementById('taxStatusBadge');
+    if (badge) { badge.textContent = labels[lvl] || ''; badge.style.background = colors[lvl] || ''; badge.style.color = wrap.style.color || '#fff'; }
+    const cc = document.getElementById('taxCreatureCount'); if(cc) cc.textContent = total;
+    const cv = document.getElementById('taxCurrentVal'); if(cv) cv.textContent = taxPerMin.toLocaleString('fr-FR') + ' 🪙/min';
+    const nt = document.getElementById('taxNextTimer'); if(nt) nt.textContent = taxNextIn + 's';
+  }
+}
+
 // ── TABS ──
 function showTab(name){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
@@ -2649,7 +2850,7 @@ function confirmSale(price) {
   if (source === 'result') {
     closeResult();
   }
-  renderInventory(); renderCollection(); updateIncomeDisplay();
+  renderInventory(); renderCollection(); updateIncomeDisplay(); updateTaxDisplay();
 }
 
 // ── PASSIVE INCOME ──
@@ -2785,6 +2986,8 @@ window.addEventListener('DOMContentLoaded',function(){
   renderHome();
   renderCollection();
   startPassiveIncome();
+  startTaxSystem();
+  updateTaxDisplay();
   initDailyQuests();
   initDailyEvent();
   updateFreeChestBtns();
