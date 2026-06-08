@@ -536,6 +536,45 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .chest-card.equip-home .chest-img-wrap img{filter:drop-shadow(0 0 12px rgba(16,185,129,0.6));}
 .chest-card.equip-home .chest-open-btn{background:linear-gradient(135deg,#065f46,#10b981);color:white;}
 
+
+/* ── FORTUNE WHEEL ── */
+.wheel-section{margin-bottom:28px;}
+.wheel-section h3{font-size:1rem;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.wheel-wrapper{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.wheel-outer{position:relative;width:280px;height:280px;}
+.wheel-pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:1.6rem;z-index:10;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));line-height:1;}
+#wheelCanvas{border-radius:50%;box-shadow:0 0 30px rgba(168,85,247,0.3),0 0 60px rgba(168,85,247,0.1);display:block;}
+.btn-spin{padding:13px 36px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-weight:900;font-size:1rem;border:none;border-radius:14px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 20px rgba(168,85,247,0.4);}
+.btn-spin:hover{transform:scale(1.04);box-shadow:0 6px 28px rgba(168,85,247,0.6);}
+.btn-spin:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+.wheel-timer{font-size:0.8rem;color:var(--text2);font-weight:600;}
+
+/* wheel result modal */
+.wheel-result-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:600;display:flex;align-items:center;justify-content:center;}
+.wheel-result-panel{background:var(--surface);border:2px solid rgba(168,85,247,0.5);border-radius:20px;padding:36px;text-align:center;animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1);min-width:280px;}
+.wheel-result-panel .wr-icon{font-size:3rem;margin-bottom:12px;}
+.wheel-result-panel .wr-label{font-size:0.8rem;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.wheel-result-panel .wr-prize{font-size:1.6rem;font-weight:900;color:#a78bfa;margin-bottom:20px;}
+.btn-wr-ok{padding:12px 36px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-weight:900;font-size:1rem;border:none;border-radius:12px;cursor:pointer;}
+
+/* ── ACHIEVEMENTS ── */
+.ach-notif{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid rgba(251,191,36,0.5);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;z-index:700;box-shadow:0 8px 30px rgba(0,0,0,0.4);animation:slide-in-right 0.4s cubic-bezier(0.34,1.56,0.64,1);max-width:300px;}
+@keyframes slide-in-right{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+.ach-notif .an-icon{font-size:1.8rem;flex-shrink:0;}
+.ach-notif .an-body{flex:1;}
+.ach-notif .an-title{font-size:0.7rem;font-weight:800;color:#fbbf24;letter-spacing:1px;text-transform:uppercase;}
+.ach-notif .an-name{font-size:0.9rem;font-weight:900;margin:2px 0;}
+.ach-notif .an-reward{font-size:0.75rem;color:#4ade80;}
+.ach-list{display:flex;flex-direction:column;gap:8px;}
+.ach-item{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;transition:border-color 0.2s;}
+.ach-item.unlocked{border-color:rgba(251,191,36,0.4);background:rgba(251,191,36,0.04);}
+.ach-item .ai-icon{font-size:1.4rem;width:32px;text-align:center;flex-shrink:0;}
+.ach-item .ai-body{flex:1;}
+.ach-item .ai-name{font-weight:800;font-size:0.85rem;}
+.ach-item .ai-desc{font-size:0.72rem;color:var(--text2);margin-top:2px;}
+.ach-item .ai-reward{font-size:0.72rem;font-weight:700;color:#fbbf24;flex-shrink:0;}
+.ach-item .ai-lock{font-size:0.9rem;opacity:0.3;}
+
 </style>
 </head>
 <body>
@@ -704,30 +743,42 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 
 <!-- COLLECTION -->
 <div id="tab-collection" class="tab-content">
-  <div class="coll-header">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <h2 style="font-size:1.2rem;font-weight:800">Bestiaire</h2>
-      <span id="collCount" style="color:var(--text2);font-size:0.9rem">0 / 15</span>
-    </div>
-    <div class="coll-progress"><div class="coll-bar" id="collBar" style="width:0%"></div></div>
+
+  <!-- Sub-nav -->
+  <div class="inv-view-toggle" style="margin-bottom:18px">
+    <button class="btn-inv-view active" id="btn-coll-bestiaire">📖 Bestiaire</button>
+    <button class="btn-inv-view" id="btn-coll-bonus">🏆 Bonus</button>
+    <button class="btn-inv-view" id="btn-coll-familles">👨‍👩‍👧 Familles</button>
   </div>
 
-  <div class="set-bonus-section">
-    <h3>🏆 Bonus de Collection</h3>
-    <div id="activeBonusList" style="display:none">
-      <p style="font-size:0.78rem;color:var(--text2);margin-bottom:8px">Bonus actifs permanents :</p>
+  <!-- View 1 : Bestiaire -->
+  <div id="coll-view-bestiaire">
+    <div class="coll-header">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <h2 style="font-size:1.1rem;font-weight:800">Toutes les créatures</h2>
+        <span id="collCount" style="color:var(--text2);font-size:0.9rem">0 / 0</span>
+      </div>
+      <div class="coll-progress"><div class="coll-bar" id="collBar" style="width:0%"></div></div>
+    </div>
+    <div class="coll-grid" id="collGrid"></div>
+  </div>
+
+  <!-- View 2 : Bonus de Collection -->
+  <div id="coll-view-bonus" style="display:none">
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:16px">Possède au moins 1 exemplaire de chaque créature d'une rareté pour débloquer un bonus permanent.</p>
+    <div id="activeBonusList" style="display:none;margin-bottom:16px">
+      <p style="font-size:0.78rem;color:var(--text2);margin-bottom:8px">✅ Bonus actifs :</p>
       <div class="set-bonus-active-list" id="activeBonusRows"></div>
     </div>
     <div class="set-bonus-grid" id="setBonusGrid"></div>
   </div>
 
-  <div class="family-section">
-    <h3>👨‍👩‍👧 Familles & Clans</h3>
-    <p style="font-size:0.78rem;color:var(--text2);margin-bottom:14px">Réunis toute une famille pour débloquer des bonus permanents sur ces créatures !</p>
+  <!-- View 3 : Familles -->
+  <div id="coll-view-familles" style="display:none">
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:16px">Réunis toute une famille pour débloquer des bonus permanents sur ces créatures !</p>
     <div class="family-grid" id="familyGrid"></div>
   </div>
 
-  <div class="coll-grid" id="collGrid"></div>
 </div>
 
 
@@ -748,6 +799,11 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
   </div>
 
   <div class="quests-section">
+    <h3>🏅 Succès</h3>
+    <div class="ach-list" id="achList"></div>
+  </div>
+
+  <div class="quests-section">
     <h3>📊 Statistiques</h3>
     <div class="stats-grid" id="statsGrid"></div>
     <div style="margin-top:16px;text-align:center">
@@ -764,6 +820,19 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <h3>🌟 Événement du jour</h3>
     <div id="eventBannerAventures"></div>
   </div>
+  <div class="aventures-section wheel-section">
+    <h3>🎡 Roue de la Fortune</h3>
+    <p style="font-size:0.78rem;color:var(--text2);margin-bottom:14px">Tente ta chance une fois par jour !</p>
+    <div class="wheel-wrapper">
+      <div class="wheel-outer">
+        <div class="wheel-pointer">▼</div>
+        <canvas id="wheelCanvas" width="280" height="280"></canvas>
+      </div>
+      <button class="btn-spin" id="btnSpinWheel">🎡 Tourner la roue !</button>
+      <div class="wheel-timer" id="wheelTimerLabel"></div>
+    </div>
+  </div>
+
   <div class="aventures-section">
     <h3>🗺️ Expéditions <span style="font-size:0.72rem;color:var(--text2);font-weight:400">(Tes créatures partent en mission et rapportent des pièces !)</span></h3>
     <div class="expedition-slots" id="expeditionSlots"></div>
@@ -970,7 +1039,7 @@ let chestToOpen = null; // index in ownedChests
 function roll(rates){const r=Math.random()*100;let c=0;for(const[k,v]of Object.entries(rates)){c+=v;if(r<c)return k;}return'common';}
 function pickRandom(rarity){const p=CREATURES.filter(c=>c.rarity===rarity);return p[Math.floor(Math.random()*p.length)];}
 function pickVisual(){const r=Math.random();return pickRandom(r<0.55?'common':r<0.82?'rare':r<0.97?'epic':'legendary');}
-function setCoins(n){coins=n;document.getElementById('coinDisplay').textContent=coins.toLocaleString('fr-FR');}
+function setCoins(n){coins=n;document.getElementById('coinDisplay').textContent=coins.toLocaleString('fr-FR');checkAchievements();}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ── HOME ──
@@ -1260,8 +1329,6 @@ function renderCollection(){
   const owned=Object.keys(inventory).filter(id=>inventory[id]>0);
   document.getElementById('collCount').textContent=owned.length+' / '+CREATURES.length;
   document.getElementById('collBar').style.width=Math.round(owned.length/CREATURES.length*100)+'%';
-  renderSetBonuses();
-  renderFamilies();
   document.getElementById('collGrid').innerHTML=CREATURES.map(c=>
     `<div class="coll-card ${inventory[c.id]?'owned':'locked'}">
       <img src="${c.img}" alt="${c.name}">
@@ -1396,6 +1463,7 @@ function trackStat(key, amount=1){
   else stats[key]=amount;
   checkQuestProgress();
   renderStatsGrid();
+  checkAchievements();
 }
 function renderStatsGrid(){
   const g=document.getElementById('statsGrid');
@@ -1623,6 +1691,8 @@ function saveGame() {
     equipmentInventory,
     creatureEquipment,
     claimedFamilyBonuses,
+    unlockedAchievements,
+    lastWheelSpin,
   };
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
@@ -1651,7 +1721,9 @@ function loadGame() {
     claimedSetBonuses  = d.claimedSetBonuses  ?? {};
     equipmentInventory     = d.equipmentInventory     ?? {};
     creatureEquipment    = d.creatureEquipment    ?? {};
-    claimedFamilyBonuses = d.claimedFamilyBonuses ?? {};
+    claimedFamilyBonuses    = d.claimedFamilyBonuses    ?? {};
+    unlockedAchievements   = d.unlockedAchievements   ?? {};
+    lastWheelSpin          = d.lastWheelSpin          ?? 0;
     return true;
   } catch(e) { return false; }
 }
@@ -1818,7 +1890,9 @@ function collectExpedition(idx) {
   }
 
   expeditions.splice(idx, 1);
+  trackStat('expeditionsDone');
   toast(msg);
+  checkAchievements();
   renderExpeditions();
   saveGame();
 }
@@ -2205,6 +2279,264 @@ function renderFamilies() {
   });
 }
 
+
+// ── FORTUNE WHEEL ──
+const WHEEL_PRIZES = [
+  { label:'300 🪙',      icon:'🪙', desc:'300 pièces !',                  color:'#6b7280', type:'coins',   value:300    },
+  { label:'Coffre 📦',   icon:'📦', desc:'Coffre de Bois !',              color:'#78716c', type:'chest',   value:'starter' },
+  { label:'1500 🪙',     icon:'🪙', desc:'1 500 pièces !',                color:'#fbbf24', type:'coins',   value:1500   },
+  { label:'Rare ✨',     icon:'✨', desc:'Créature rare aléatoire !',     color:'#3b82f6', type:'creature',value:'rare'  },
+  { label:'5000 🪙',     icon:'🪙', desc:'5 000 pièces !',                color:'#f59e0b', type:'coins',   value:5000   },
+  { label:'Coffre 💎',   icon:'💎', desc:'Coffre Mystique !',             color:'#2563eb', type:'chest',   value:'mystic'},
+  { label:'Équip. ⚔️',   icon:'⚔️', desc:'Équipement aléatoire !',       color:'#10b981', type:'equip',   value:null   },
+  { label:'15 000 🪙',   icon:'💰', desc:'15 000 pièces !',               color:'#ef4444', type:'coins',   value:15000  },
+];
+
+let lastWheelSpin = 0;
+let wheelAngle = 0;
+let wheelSpinning = false;
+
+function getWheelCooldown() { return 24 * 60 * 60 * 1000; }
+
+function initWheel() {
+  drawWheel(wheelAngle);
+  updateWheelBtn();
+  setInterval(updateWheelBtn, 1000);
+}
+
+function drawWheel(angle) {
+  const canvas = document.getElementById('wheelCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx = 140, cy = 140, r = 130;
+  const n = WHEEL_PRIZES.length;
+  const arc = (2 * Math.PI) / n;
+  ctx.clearRect(0, 0, 280, 280);
+  WHEEL_PRIZES.forEach((prize, i) => {
+    const start = angle + i * arc - Math.PI / 2;
+    const end = start + arc;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.fillStyle = prize.color;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(15,10,30,0.6)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // label
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(start + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.shadowColor = 'rgba(0,0,0,0.7)';
+    ctx.shadowBlur = 4;
+    ctx.fillText(prize.label, r - 8, 5);
+    ctx.restore();
+  });
+  // center circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, 22, 0, 2 * Math.PI);
+  ctx.fillStyle = '#0f0a1e';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(168,85,247,0.6)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.fillStyle = '#a78bfa';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✦', cx, cy);
+}
+
+function updateWheelBtn() {
+  const btn = document.getElementById('btnSpinWheel');
+  const lbl = document.getElementById('wheelTimerLabel');
+  if (!btn || !lbl) return;
+  const now = Date.now();
+  const remaining = getWheelCooldown() - (now - lastWheelSpin);
+  if (remaining <= 0) {
+    btn.disabled = false;
+    btn.textContent = '🎡 Tourner la roue !';
+    lbl.textContent = '';
+  } else {
+    btn.disabled = true;
+    const h = Math.floor(remaining / 3600000);
+    const m = Math.floor((remaining % 3600000) / 60000);
+    const s = Math.floor((remaining % 60000) / 1000);
+    btn.textContent = '🎡 Tourner la roue !';
+    lbl.textContent = `Prochaine rotation dans ${h}h ${m}m ${s}s`;
+  }
+}
+
+function spinWheel() {
+  if (wheelSpinning) return;
+  const now = Date.now();
+  if (now - lastWheelSpin < getWheelCooldown()) return;
+  wheelSpinning = true;
+  lastWheelSpin = now;
+  document.getElementById('btnSpinWheel').disabled = true;
+
+  // Pick result
+  const n = WHEEL_PRIZES.length;
+  const prizeIdx = Math.floor(Math.random() * n);
+  const arc = (2 * Math.PI) / n;
+  // Pointer is at top (angle 0 = top after -PI/2 offset in draw)
+  // To land prize i at top: angle = -i*arc (pointer is at -PI/2 in draw coords)
+  const targetOffset = -prizeIdx * arc;
+  const fullSpins = (6 + Math.floor(Math.random() * 4)) * 2 * Math.PI;
+  const startAngle = wheelAngle;
+  const endAngle = startAngle - fullSpins + targetOffset - (wheelAngle % (2 * Math.PI));
+
+  const duration = 5000;
+  let startTime = null;
+
+  function animate(ts) {
+    if (!startTime) startTime = ts;
+    const p = Math.min((ts - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 4);
+    const current = startAngle + (endAngle - startAngle) * eased;
+    drawWheel(current);
+    if (p < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      wheelAngle = current;
+      wheelSpinning = false;
+      saveGame();
+      showWheelResult(WHEEL_PRIZES[prizeIdx]);
+      updateWheelBtn();
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function showWheelResult(prize) {
+  // Apply reward
+  let resultDesc = prize.desc;
+  if (prize.type === 'coins') {
+    setCoins(coins + prize.value);
+  } else if (prize.type === 'chest') {
+    ownedChests.push({ type: prize.value });
+    renderHome();
+  } else if (prize.type === 'equip') {
+    const item = rollEquipment();
+    equipmentInventory[item.id] = (equipmentInventory[item.id] || 0) + 1;
+    resultDesc = `${item.name} obtenu !`;
+    renderEquipmentGrid();
+  } else if (prize.type === 'creature') {
+    const c = pickRandom(prize.value);
+    inventory[c.id] = (inventory[c.id] || 0) + 1;
+    resultDesc = `${c.name} obtenu !`;
+    triggerEffects(prize.value);
+    renderInventory(); renderCollection(); updateIncomeDisplay();
+  }
+  saveGame();
+
+  const modal = document.createElement('div');
+  modal.className = 'wheel-result-backdrop';
+  modal.innerHTML = `<div class="wheel-result-panel">
+    <div class="wr-icon">${prize.icon}</div>
+    <div class="wr-label">Roue de la Fortune</div>
+    <div class="wr-prize">${resultDesc}</div>
+    <button class="btn-wr-ok">Super ! 🎉</button>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.querySelector('.btn-wr-ok').addEventListener('click', () => modal.remove());
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+// ── ACHIEVEMENTS ──
+const ACHIEVEMENTS = [
+  { id:'first_open',  icon:'📦', name:'Premier Pas',          desc:'Ouvrir son premier coffre',                reward:100,  cond:s => s.chestsOpened >= 1 },
+  { id:'open10',      icon:'📦', name:'Accro aux Coffres',     desc:'Ouvrir 10 coffres',                        reward:400,  cond:s => s.chestsOpened >= 10 },
+  { id:'open50',      icon:'🎰', name:'Invocateur',            desc:'Ouvrir 50 coffres',                        reward:1500, cond:s => s.chestsOpened >= 50 },
+  { id:'open100',     icon:'🎰', name:'Maître Invocateur',     desc:'Ouvrir 100 coffres',                       reward:4000, cond:s => s.chestsOpened >= 100 },
+  { id:'first_rare',  icon:'💎', name:'Première Rareté',       desc:'Obtenir une créature rare',                reward:200,  cond:s => s.gotRare >= 1 },
+  { id:'first_epic',  icon:'✨', name:'Touché par la Magie',   desc:'Obtenir une créature épique',              reward:600,  cond:s => s.gotEpic >= 1 },
+  { id:'first_leg',   icon:'⭐', name:'Élu des Dieux',         desc:'Obtenir une légendaire',                   reward:2500, cond:s => s.gotLegendary >= 1 },
+  { id:'sell10',      icon:'💰', name:'Petit Marchand',        desc:'Vendre 10 créatures',                      reward:300,  cond:s => s.sold >= 10 },
+  { id:'sell50',      icon:'💰', name:'Grand Marchand',        desc:'Vendre 50 créatures',                      reward:1200, cond:s => s.sold >= 50 },
+  { id:'fuse5',       icon:'🔮', name:'Alchimiste',            desc:'Réaliser 5 fusions',                       reward:800,  cond:s => s.fused >= 5 },
+  { id:'maxlevel',    icon:'⭐', name:'Maître des Bêtes',      desc:'Monter une créature niveau 5',             reward:2000, cond:() => Object.values(creatureLevels).some(l => l >= 5) },
+  { id:'equip1',      icon:'⚔️', name:'Combattant Équipé',     desc:'Équiper une créature',                     reward:300,  cond:() => Object.keys(creatureEquipment).length >= 1 },
+  { id:'family1',     icon:'👨‍👩‍👧', name:'Réunion de Famille',  desc:'Compléter une famille',                   reward:1200, cond:() => FAMILIES.some(f => getFamilyProgress(f.id).complete) },
+  { id:'passive10k',  icon:'🌿', name:'Éleveur Prospère',      desc:'Accumuler 10 000 pièces passives',         reward:1000, cond:s => s.passiveEarned >= 10000 },
+  { id:'rich',        icon:'🏦', name:'Riche à Millions',      desc:'Avoir 10 000 pièces en même temps',        reward:1000, cond:() => coins >= 10000 },
+  { id:'spin1',       icon:'🎡', name:'Chanceux',              desc:'Utiliser la roue de la fortune',           reward:200,  cond:() => lastWheelSpin > 0 },
+  { id:'exp10',       icon:'🗺️', name:'Explorateur',           desc:'Terminer 10 expéditions',                  reward:1000, cond:s => (s.expeditionsDone||0) >= 10 },
+  { id:'all_common',  icon:'🐛', name:'Maître du Commun',      desc:'Posséder toutes les créatures communes',   reward:800,  cond:() => CREATURES.filter(c=>c.rarity==='common').every(c=>(inventory[c.id]||0)>0) },
+  { id:'all_leg',     icon:'👑', name:'Légende Absolue',       desc:'Posséder toutes les légendaires',          reward:12000,cond:() => CREATURES.filter(c=>c.rarity==='legendary').every(c=>(inventory[c.id]||0)>0) },
+];
+
+let unlockedAchievements = {};
+let achNotifQueue = [];
+let achNotifActive = false;
+
+function checkAchievements() {
+  ACHIEVEMENTS.forEach(ach => {
+    if (unlockedAchievements[ach.id]) return;
+    let met = false;
+    try { met = ach.cond(stats); } catch(e) {}
+    if (met) {
+      unlockedAchievements[ach.id] = true;
+      setCoins(coins + ach.reward);
+      achNotifQueue.push(ach);
+      if (!achNotifActive) showNextAchNotif();
+    }
+  });
+  renderAchievements();
+}
+
+function showNextAchNotif() {
+  if (achNotifQueue.length === 0) { achNotifActive = false; return; }
+  achNotifActive = true;
+  const ach = achNotifQueue.shift();
+  const el = document.createElement('div');
+  el.className = 'ach-notif';
+  el.innerHTML = `<div class="an-icon">${ach.icon}</div>
+    <div class="an-body">
+      <div class="an-title">🏅 Succès débloqué !</div>
+      <div class="an-name">${ach.name}</div>
+      <div class="an-reward">+${ach.reward.toLocaleString('fr-FR')} 🪙</div>
+    </div>`;
+  document.body.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.5s, transform 0.5s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(120%)';
+    setTimeout(() => { el.remove(); showNextAchNotif(); }, 500);
+  }, 3500);
+}
+
+function renderAchievements() {
+  const list = document.getElementById('achList');
+  if (!list) return;
+  list.innerHTML = ACHIEVEMENTS.map(ach => {
+    const done = !!unlockedAchievements[ach.id];
+    return `<div class="ach-item ${done ? 'unlocked' : ''}">
+      <div class="ai-icon">${done ? ach.icon : '🔒'}</div>
+      <div class="ai-body">
+        <div class="ai-name" style="${done ? 'color:#fbbf24' : ''}">${done ? ach.name : '???'}</div>
+        <div class="ai-desc">${done ? ach.desc : 'Succès verrouillé'}</div>
+      </div>
+      <div class="ai-reward">${done ? '+'+ach.reward.toLocaleString('fr-FR')+'🪙' : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── COLLECTION SUB-TABS ──
+function showCollView(view) {
+  ['bestiaire','bonus','familles'].forEach(v => {
+    document.getElementById('coll-view-'+v).style.display = v===view ? 'block' : 'none';
+    document.getElementById('btn-coll-'+v).classList.toggle('active', v===view);
+  });
+  if (view==='bestiaire') renderCollection();
+  if (view==='bonus')     renderSetBonuses();
+  if (view==='familles')  renderFamilies();
+}
+
 // ── TABS ──
 function showTab(name){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
@@ -2212,10 +2544,10 @@ function showTab(name){
   document.getElementById('tab-'+name).classList.add('active');
   document.getElementById('tab-'+name+'-btn').classList.add('active');
   if(name==='inventory')renderInventory();
-  if(name==='collection')renderCollection();
+  if(name==='collection'){showCollView('bestiaire');}
   if(name==='home')renderHome();
-  if(name==='quests'){renderQuests();renderStatsGrid();}
-  if(name==='aventures'){renderExpeditions();renderEventBanners();}
+  if(name==='quests'){renderQuests();renderStatsGrid();renderAchievements();}
+  if(name==='aventures'){renderExpeditions();renderEventBanners();drawWheel(wheelAngle);updateWheelBtn();}
 }
 
 // ── BUYER SYSTEM ──
@@ -2390,9 +2722,13 @@ window.addEventListener('DOMContentLoaded',function(){
   document.getElementById('tab-shop-btn').addEventListener('click',()=>showTab('shop'));
   document.getElementById('tab-inv-btn').addEventListener('click',()=>showTab('inventory'));
   document.getElementById('tab-coll-btn').addEventListener('click',()=>showTab('collection'));
+  document.getElementById('btn-coll-bestiaire').addEventListener('click',()=>showCollView('bestiaire'));
+  document.getElementById('btn-coll-bonus').addEventListener('click',()=>showCollView('bonus'));
+  document.getElementById('btn-coll-familles').addEventListener('click',()=>showCollView('familles'));
   document.getElementById('tab-quests-btn').addEventListener('click',()=>showTab('quests'));
   document.getElementById('tab-aventures-btn').addEventListener('click',()=>showTab('aventures'));
   document.getElementById('btn-new-expedition').addEventListener('click',openExpeditionPicker);
+  document.getElementById('btnSpinWheel').addEventListener('click',spinWheel);
   document.getElementById('freeChestBtn').addEventListener('click',claimFreeChest);
   document.getElementById('freeChestBtn2').addEventListener('click',claimFreeChest);
   document.getElementById('btn-reset-save').addEventListener('click',function(){
@@ -2453,6 +2789,9 @@ window.addEventListener('DOMContentLoaded',function(){
   initDailyEvent();
   updateFreeChestBtns();
   renderExpeditions();
+  initWheel();
+  renderAchievements();
+  checkAchievements();
 });
 </script>
 </body>
