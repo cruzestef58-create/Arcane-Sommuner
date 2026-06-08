@@ -488,6 +488,32 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .shop-card.equip-box:hover{box-shadow:0 8px 30px rgba(74,222,128,0.2);}
 .shop-card.equip-box .btn-buy{background:linear-gradient(135deg,#065f46,#10b981);color:white;}
 
+
+/* ── FAMILIES ── */
+.family-section{margin-top:28px;}
+.family-section h3{font-size:1rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.family-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(max-width:480px){.family-grid{grid-template-columns:1fr;}}
+.family-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:14px;transition:border-color 0.3s;position:relative;overflow:hidden;}
+.family-card.complete{border-color:rgba(74,222,128,0.5);}
+.family-card.claimed{border-color:rgba(168,85,247,0.5);background:rgba(168,85,247,0.05);}
+.family-card .fc-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.family-card .fc-icon{font-size:1.5rem;}
+.family-card .fc-name{font-weight:900;font-size:0.9rem;}
+.family-card .fc-count{font-size:0.72rem;color:var(--text2);margin-top:1px;}
+.family-card .fc-bar-wrap{height:4px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;margin-bottom:10px;}
+.family-card .fc-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,#7c3aed,#a855f7);transition:width 0.5s;}
+.family-card .fc-members{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;}
+.family-card .fc-members img{width:32px;height:32px;object-fit:contain;border-radius:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);opacity:0.4;transition:opacity 0.2s;}
+.family-card .fc-members img.owned{opacity:1;border-color:rgba(168,85,247,0.4);}
+.family-card .fc-bonus{font-size:0.73rem;color:var(--text2);margin-bottom:10px;line-height:1.5;}
+.family-card .fc-bonus strong{color:#fff;}
+.btn-claim-family{width:100%;padding:7px;border-radius:8px;font-weight:800;font-size:0.78rem;border:none;cursor:pointer;}
+.btn-claim-family.ready{background:linear-gradient(135deg,#059669,#10b981);color:#fff;}
+.btn-claim-family.claimed-done{background:rgba(255,255,255,0.05);color:var(--text2);cursor:default;}
+.btn-claim-family.locked{background:rgba(255,255,255,0.04);color:var(--text2);cursor:not-allowed;opacity:0.5;}
+.fc-active-tag{position:absolute;top:10px;right:10px;font-size:0.6rem;font-weight:800;background:rgba(168,85,247,0.25);color:#c4b5fd;border-radius:10px;padding:2px 8px;}
+
 </style>
 </head>
 <body>
@@ -671,6 +697,12 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
       <div class="set-bonus-active-list" id="activeBonusRows"></div>
     </div>
     <div class="set-bonus-grid" id="setBonusGrid"></div>
+  </div>
+
+  <div class="family-section">
+    <h3>👨‍👩‍👧 Familles & Clans</h3>
+    <p style="font-size:0.78rem;color:var(--text2);margin-bottom:14px">Réunis toute une famille pour débloquer des bonus permanents sur ces créatures !</p>
+    <div class="family-grid" id="familyGrid"></div>
   </div>
 
   <div class="coll-grid" id="collGrid"></div>
@@ -909,6 +941,15 @@ function renderHome(){
 
 // ── SHOP ──
 function buyChest(boxType, qty){
+  if(boxType==='equip'){
+    const disc=qty>=3?0.9:1;
+    const total=Math.floor(EQUIP_BOX_DEF.cost*qty*disc);
+    if(coins<total){toast('❌ Pas assez de pièces !');return;}
+    setCoins(coins-total);
+    for(let i=0;i<qty;i++) openEquipBox();
+    saveGame();
+    return;
+  }
   const box=BOXES[boxType];
   const discounts={1:1, 3:0.9, 5:0.875, 10:0.85};
   const mult=discounts[qty]||1;
@@ -1143,6 +1184,7 @@ function renderCollection(){
   document.getElementById('collCount').textContent=owned.length+' / '+CREATURES.length;
   document.getElementById('collBar').style.width=Math.round(owned.length/CREATURES.length*100)+'%';
   renderSetBonuses();
+  renderFamilies();
   document.getElementById('collGrid').innerHTML=CREATURES.map(c=>
     `<div class="coll-card ${inventory[c.id]?'owned':'locked'}">
       <img src="${c.img}" alt="${c.name}">
@@ -1503,6 +1545,7 @@ function saveGame() {
     claimedSetBonuses,
     equipmentInventory,
     creatureEquipment,
+    claimedFamilyBonuses,
   };
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
@@ -1529,8 +1572,9 @@ function loadGame() {
     dailyEvent     = d.dailyEvent     ?? null;
     lastEventDate      = d.lastEventDate      ?? '';
     claimedSetBonuses  = d.claimedSetBonuses  ?? {};
-    equipmentInventory = d.equipmentInventory ?? {};
-    creatureEquipment  = d.creatureEquipment  ?? {};
+    equipmentInventory     = d.equipmentInventory     ?? {};
+    creatureEquipment    = d.creatureEquipment    ?? {};
+    claimedFamilyBonuses = d.claimedFamilyBonuses ?? {};
     return true;
   } catch(e) { return false; }
 }
@@ -1679,7 +1723,7 @@ function collectExpedition(idx) {
 
   const baseReward = m.mult[c.rarity];
   const levelBonus = getLevelMult(exp.creatureId);
-  const equipBonus = 1 + getEquipExpBonus(exp.creatureId);
+  const equipBonus = 1 + getEquipExpBonus(exp.creatureId) + getFamilyExpBonus(exp.creatureId);
   const reward = Math.round(baseReward * levelBonus * equipBonus);
   setCoins(coins + reward);
 
@@ -1965,6 +2009,98 @@ function renderEquipmentGrid() {
   }).join('');
 }
 
+
+// ── FAMILIES ──
+const FAMILIES = [
+  { id:'gobelin', icon:'🧌', name:'Clan Gobelin',        members:['gobelin','gobgeant','gobfeu'],           incBonus:0.25, expBonus:0.00, desc:'Revenu des Gobelins +25%',               coinReward:600  },
+  { id:'araignee',icon:'🕷️', name:'Famille Araignée',    members:['araignee','aracrystal'],                 incBonus:0.30, expBonus:0.00, desc:'Revenu des Araignées +30%',               coinReward:400  },
+  { id:'escargot',icon:'🐌', name:'Famille Escargot',    members:['escargot','escarcrys'],                  incBonus:0.30, expBonus:0.00, desc:'Revenu des Escargots +30%',                coinReward:400  },
+  { id:'slime',   icon:'🫧', name:'Famille Slime',       members:['slime','slime_cosmique'],                incBonus:0.35, expBonus:0.00, desc:'Revenu des Slimes +35%',                   coinReward:500  },
+  { id:'feu',     icon:'🔥', name:'Êtres du Feu',        members:['gobfeu','lezard','epee_dragon'],         incBonus:0.10, expBonus:0.40, desc:'Revenu +10%, Expéditions +40%',            coinReward:1200 },
+  { id:'glace',   icon:'❄️', name:'Êtres de Glace',      members:['heriglace','spectre'],                   incBonus:0.20, expBonus:0.30, desc:'Revenu +20%, Expéditions +30%',            coinReward:2000 },
+  { id:'vegetal', icon:'🌿', name:'Monde Végétal',       members:['plante','radis'],                        incBonus:0.28, expBonus:0.00, desc:'Revenu des Végétaux +28%',                 coinReward:350  },
+  { id:'titans',  icon:'⚔️', name:'Ordre des Titans',    members:['cyclops','oikong','rhino'],              incBonus:0.00, expBonus:0.45, desc:'Expéditions des Titans +45%',              coinReward:1500 },
+  { id:'ombres',  icon:'👻', name:'Esprits des Ombres',  members:['onbrageur','oeil_astral'],               incBonus:0.38, expBonus:0.00, desc:'Revenu des Esprits +38%',                  coinReward:1200 },
+  { id:'maudits', icon:'💀', name:'Les Maudits',         members:['scruge','golem'],                        incBonus:0.22, expBonus:0.22, desc:'Revenu +22%, Expéditions +22%',            coinReward:800  },
+  { id:'electro', icon:'⚡', name:'Êtres Électriques',   members:['furet'],                                 incBonus:0.45, expBonus:0.30, desc:'Revenu +45%, Expéditions +30%',            coinReward:200  },
+];
+
+let claimedFamilyBonuses = {}; // { familyId: true }
+
+function getFamilyProgress(familyId) {
+  const fam = FAMILIES.find(f => f.id === familyId);
+  if (!fam) return { owned:0, total:0, complete:false };
+  const owned = fam.members.filter(id => (inventory[id] || 0) > 0).length;
+  return { owned, total: fam.members.length, complete: owned === fam.members.length };
+}
+
+function getFamiliesFor(creatureId) {
+  return FAMILIES.filter(f => f.members.includes(creatureId));
+}
+
+function getFamilyIncBonus(creatureId) {
+  return getFamiliesFor(creatureId)
+    .filter(f => claimedFamilyBonuses[f.id])
+    .reduce((sum, f) => sum + f.incBonus, 0);
+}
+
+function getFamilyExpBonus(creatureId) {
+  return getFamiliesFor(creatureId)
+    .filter(f => claimedFamilyBonuses[f.id])
+    .reduce((sum, f) => sum + f.expBonus, 0);
+}
+
+function claimFamilyBonus(familyId) {
+  if (claimedFamilyBonuses[familyId]) return;
+  const prog = getFamilyProgress(familyId);
+  if (!prog.complete) { toast('Famille incomplète !'); return; }
+  const fam = FAMILIES.find(f => f.id === familyId);
+  claimedFamilyBonuses[familyId] = true;
+  setCoins(coins + fam.coinReward);
+  toast(`👨‍👩‍👧 Famille "${fam.name}" complète ! +${fam.coinReward.toLocaleString('fr-FR')} 🪙`);
+  triggerEffects('epic');
+  updateIncomeDisplay();
+  renderFamilies();
+  saveGame();
+}
+
+function renderFamilies() {
+  const grid = document.getElementById('familyGrid');
+  if (!grid) return;
+  grid.innerHTML = FAMILIES.map(fam => {
+    const prog = getFamilyProgress(fam.id);
+    const pct = Math.round(prog.owned / prog.total * 100);
+    const claimed = claimedFamilyBonuses[fam.id];
+    const cls = claimed ? 'claimed' : prog.complete ? 'complete' : '';
+    const btnCls = claimed ? 'claimed-done' : prog.complete ? 'ready' : 'locked';
+    const btnTxt = claimed ? '✅ Bonus actif' : prog.complete ? '🎁 Réclamer !' : `🔒 ${prog.owned}/${prog.total} membres`;
+    const membersHtml = fam.members.map(id => {
+      const c = CREATURES.find(x => x.id === id);
+      if (!c) return '';
+      const has = (inventory[id] || 0) > 0;
+      return `<img src="${c.img}" alt="${c.name}" class="${has ? 'owned' : ''}" title="${c.name}${has ? ' ✅' : ' ❌'}">`;
+    }).join('');
+    return `<div class="family-card ${cls}">
+      ${claimed ? '<div class="fc-active-tag">ACTIF</div>' : ''}
+      <div class="fc-head">
+        <div class="fc-icon">${fam.icon}</div>
+        <div>
+          <div class="fc-name">${fam.name}</div>
+          <div class="fc-count">${prog.owned} / ${prog.total} créatures</div>
+        </div>
+      </div>
+      <div class="fc-bar-wrap"><div class="fc-bar" style="width:${pct}%"></div></div>
+      <div class="fc-members">${membersHtml}</div>
+      <div class="fc-bonus">🪙 <strong>+${fam.coinReward.toLocaleString('fr-FR')}</strong> pièces<br>⚡ <strong>${fam.desc}</strong></div>
+      <button class="btn-claim-family ${btnCls}" data-famid="${fam.id}" ${claimed || !prog.complete ? 'disabled' : ''}>${btnTxt}</button>
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.btn-claim-family:not([disabled])').forEach(btn => {
+    btn.addEventListener('click', function() { claimFamilyBonus(this.dataset.famid); });
+  });
+}
+
 // ── TABS ──
 function showTab(name){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
@@ -2089,7 +2225,7 @@ function getTotalIncome() {
   let total = 0;
   for (const [id, qty] of Object.entries(inventory)) {
     const c = CREATURES.find(x => x.id === id);
-    if (c) total += INCOME_RATE[c.rarity] * qty * getLevelMult(id) * getSetIncMult(c.rarity) * (1 + getEquipIncBonus(id));
+    if (c) total += INCOME_RATE[c.rarity] * qty * getLevelMult(id) * getSetIncMult(c.rarity) * (1 + getEquipIncBonus(id) + getFamilyIncBonus(id));
   }
   if (hasBuff('income2x')) total *= 2;
   return total;
