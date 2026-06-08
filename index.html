@@ -1663,7 +1663,15 @@ async function triggerOpenBox(boxType){
     spinning=false;
     return;
   }
-  const rarity=roll(BOXES[boxType].rates);
+  // Boost taux unique créature selon mythiques équipés (+0.0002% par mythique)
+  const mythicEqCount = countMythicEquipped();
+  let creatureRates = { ...BOXES[boxType].rates };
+  if (mythicEqCount > 0 && creatureRates.unique !== undefined) {
+    const bonus = mythicEqCount * 0.0002;
+    creatureRates.unique = (creatureRates.unique || 0) + bonus;
+    creatureRates.common = Math.max(0.001, (creatureRates.common || 0) - bonus);
+  }
+  const rarity=roll(creatureRates);
   const creature=pickRandom(rarity);
   await spinRoulette(creature);
   triggerEffects(rarity);
@@ -2662,13 +2670,27 @@ const EQUIPMENT = [
   { id:'eq_epee_cosmique',          name:'Épée Cosmique Universelle',  type:'weapon',  rarity:'unique', img:IMG['eq_epee_cosmique'],  incomeBonus:10.00, desc:'+1000% revenu' },
 ];
 
-const EQUIP_BOX_DEF = { cost:600, name:"Coffre d'Équipement", rates:{ common:45.099, rare:28, epic:18, legendary:8, mythic:0.9, unique:0.001 } };
+const EQUIP_BOX_DEF = { cost:600, name:"Coffre d'Équipement", rates:{ common:45.999, rare:28, epic:18, legendary:8, unique:0.001 } };
 
 let equipmentInventory = {};  // { equipId: qty }
 let creatureEquipment   = {};  // { creatureId: equipId }
 
+function countMythicEquipped() {
+  return Object.entries(inventory).reduce((total, [id, qty]) => {
+    const c = CREATURES.find(c => c.id === id);
+    return total + (c && c.rarity === 'mythic' ? qty : 0);
+  }, 0);
+}
+
 function rollEquipment() {
-  const r = roll(EQUIP_BOX_DEF.rates);
+  // Chaque équipement mythique équipé booste la chance unique (+0.004% par mythique)
+  const mythicBonus = countMythicEquipped() * 0.004;
+  const rates = { ...EQUIP_BOX_DEF.rates };
+  if (mythicBonus > 0) {
+    rates.unique = (rates.unique || 0.001) + mythicBonus;
+    rates.common = Math.max(0.001, rates.common - mythicBonus);
+  }
+  const r = roll(rates);
   const pool = EQUIPMENT.filter(e => e.rarity === r);
   return pool[Math.floor(Math.random() * pool.length)];
 }
