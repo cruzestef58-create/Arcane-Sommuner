@@ -576,6 +576,12 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .ach-item .ai-lock{font-size:0.9rem;opacity:0.3;}
 
 
+/* ── SELL ALL WRAP ── */
+.sell-all-wrap{display:flex;gap:8px;align-items:center;margin-top:10px;}
+.sell-all-wrap select{background:var(--surface2);color:var(--text1);border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:0.82rem;font-weight:700;cursor:pointer;outline:none;flex:1;}
+.sell-all-wrap select:focus{border-color:var(--accent);}
+.sell-all-wrap .btn-sell-all{white-space:nowrap;}
+
 /* ── TAX SYSTEM ── */
 .tax-wrap{display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:700;padding:5px 10px;border-radius:8px;border:1px solid;transition:all 0.4s;}
 .tax-wrap.free   {color:#4ade80;border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.08);}
@@ -595,6 +601,56 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .tax-tier{flex:1;padding:6px 4px;border-radius:6px;text-align:center;font-size:0.65rem;font-weight:800;}
 
 .tax-warning-toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:rgba(239,68,68,0.95);color:#fff;font-weight:800;font-size:0.9rem;padding:10px 22px;border-radius:12px;z-index:800;animation:slide-in-right 0.3s;box-shadow:0 4px 20px rgba(239,68,68,0.5);}
+
+
+/* ── RENAISSANCE (PRESTIGE) ── */
+.prestige-btn{background:linear-gradient(135deg,#7c3aed,#db2777,#f59e0b);color:#fff;border:none;border-radius:12px;padding:12px 20px;font-size:0.92rem;font-weight:900;cursor:pointer;width:100%;margin-top:8px;letter-spacing:0.5px;box-shadow:0 4px 20px rgba(124,58,237,0.4);transition:transform 0.15s,box-shadow 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.prestige-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,0.6);}
+.prestige-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.prestige-locked{font-size:0.75rem;color:var(--text2);text-align:center;margin-top:6px;}
+
+.prestige-stars{display:flex;gap:6px;justify-content:center;margin:8px 0 4px;}
+.p-star{font-size:1.3rem;filter:grayscale(1);transition:filter 0.3s;}
+.p-star.lit{filter:none;}
+
+/* Modal Renaissance */
+.prestige-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:600;backdrop-filter:blur(6px);}
+.prestige-modal-box{background:linear-gradient(160deg,#1a0a2e,#0f172a);border:2px solid rgba(124,58,237,0.5);border-radius:20px;padding:28px 24px;max-width:360px;width:90%;text-align:center;box-shadow:0 0 60px rgba(124,58,237,0.3);}
+.prestige-modal-box h2{font-size:1.5rem;font-weight:900;margin-bottom:6px;background:linear-gradient(90deg,#a78bfa,#f472b6,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.prestige-modal-box p{font-size:0.82rem;color:var(--text2);line-height:1.5;margin-bottom:14px;}
+.prestige-gains-list{background:rgba(255,255,255,0.05);border-radius:12px;padding:14px;margin-bottom:18px;text-align:left;}
+.prestige-gains-list .pg-row{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:0.82rem;}
+.prestige-gains-list .pg-icon{font-size:1.1rem;width:24px;text-align:center;}
+.prestige-gains-list .pg-val{font-weight:800;color:#a78bfa;}
+.prestige-modal-btns{display:flex;gap:10px;}
+.prestige-confirm-btn{flex:1;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:10px;padding:12px;font-size:0.9rem;font-weight:800;cursor:pointer;}
+.prestige-cancel-btn{flex:1;background:var(--surface2);color:var(--text1);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:0.9rem;font-weight:700;cursor:pointer;}
+
+.prestige-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(219,39,119,0.3));border:1px solid rgba(167,139,250,0.4);border-radius:20px;padding:3px 10px;font-size:0.72rem;font-weight:800;color:#c4b5fd;margin-left:8px;}
+
+@keyframes prestige-burst{0%{transform:scale(0) rotate(-20deg);opacity:0}60%{transform:scale(1.15) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+.prestige-anim{animation:prestige-burst 0.6s cubic-bezier(.34,1.56,.64,1) forwards;}
+
+
+/* ── INCOME PER CREATURE ── */
+.inv-income{font-size:0.68rem;color:#4ade80;font-weight:700;margin-top:3px;display:flex;align-items:center;justify-content:center;gap:3px;}
+.inv-income .inc-num{font-size:0.72rem;}
+
+/* ── INCOME PER RARITY HEADER ── */
+.inv-rarity-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-radius:8px;font-size:0.78rem;font-weight:800;margin-bottom:8px;margin-top:4px;}
+.inv-rarity-header.rh-common   {background:rgba(255,255,255,0.05);color:#d1d5db;}
+.inv-rarity-header.rh-rare     {background:rgba(59,130,246,0.1);color:#60a5fa;}
+.inv-rarity-header.rh-epic     {background:rgba(168,85,247,0.1);color:#c084fc;}
+.inv-rarity-header.rh-legendary{background:rgba(245,158,11,0.1);color:#fbbf24;}
+.inv-rarity-header .rh-income  {font-size:0.72rem;color:#4ade80;font-weight:700;}
+
+/* ── EQUIP IN SALE MODAL ── */
+.buyer-equip-info{display:flex;align-items:center;gap:10px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.3);border-radius:10px;padding:9px 12px;margin-bottom:12px;}
+.buyer-equip-info img{width:36px;height:36px;object-fit:contain;border-radius:6px;}
+.buyer-equip-info .bei-text{flex:1;font-size:0.75rem;line-height:1.4;}
+.buyer-equip-info .bei-name{font-weight:800;color:#c4b5fd;}
+.buyer-equip-info .bei-note{color:var(--text2);}
+.buyer-equip-info .bei-val{font-size:0.78rem;font-weight:800;color:#4ade80;white-space:nowrap;}
 
 </style>
 </head>
@@ -635,6 +691,27 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <span id="chestCount">0 coffre(s)</span>
   </div>
   <div id="eventBanner" style="display:none"></div>
+  <div id="prestigeSection" style="margin-bottom:14px;">
+    <div style="background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(219,39,119,0.08));border:1px solid rgba(124,58,237,0.3);border-radius:14px;padding:14px 16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-weight:900;font-size:0.95rem;">✨ Renaissance</span>
+        <span id="prestigeBadge" class="prestige-badge" style="display:none">⭐ Étoile 1</span>
+      </div>
+      <div class="prestige-stars" id="prestigeStars">
+        <span class="p-star" data-i="0">⭐</span>
+        <span class="p-star" data-i="1">⭐</span>
+        <span class="p-star" data-i="2">⭐</span>
+        <span class="p-star" data-i="3">⭐</span>
+        <span class="p-star" data-i="4">⭐</span>
+      </div>
+      <div id="prestigeProgressBar" style="height:6px;border-radius:4px;background:rgba(255,255,255,0.08);margin-bottom:10px;overflow:hidden;">
+        <div id="prestigeProgressFill" style="height:100%;border-radius:4px;background:linear-gradient(90deg,#7c3aed,#db2777);transition:width 0.5s;width:0%"></div>
+      </div>
+      <div id="prestigeDesc" style="font-size:0.75rem;color:var(--text2);margin-bottom:10px;line-height:1.4;"></div>
+      <button class="prestige-btn" id="prestigeBtn" disabled>🌟 Renaissance</button>
+      <div class="prestige-locked" id="prestigeLockMsg"></div>
+    </div>
+  </div>
   <div id="taxInfoBanner" style="display:none;margin-bottom:12px">
     <div class="tax-info-panel">
       <div class="tip-title">🏛️ Taxe d'entrepôt <span id="taxStatusBadge" style="font-size:0.72rem;padding:2px 8px;border-radius:10px;margin-left:4px"></span></div>
@@ -772,7 +849,16 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
       <button class="inv-filter" data-f="epic" style="color:var(--epic)">Épique</button>
       <button class="inv-filter" data-f="legendary" style="color:var(--legendary)">Légendaire</button>
     </div>
-    <button class="btn-sell-all" id="sell-all-btn">Tout vendre (Communs)</button>
+    <div class="sell-all-wrap">
+      <select id="sell-all-rarity">
+        <option value="common">Communs</option>
+        <option value="rare">Rares</option>
+        <option value="epic">Épiques</option>
+        <option value="legendary">Légendaires</option>
+        <option value="all">Tout (sauf équipés)</option>
+      </select>
+      <button class="btn-sell-all" id="sell-all-btn">🗑️ Tout vendre</button>
+    </div>
   </div>
   <div class="inv-grid" id="invGrid"></div>
   </div><!-- end creatures view -->
@@ -904,6 +990,14 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
         <div class="bci-name" id="buyerCreatureName"></div>
         <div class="bci-base">Prix de base : <span id="buyerBasePrice"></span> 🪙</div>
       </div>
+    </div>
+    <div class="buyer-equip-info" id="buyerEquipBanner" style="display:none">
+      <img src="" id="buyerEquipImg" alt="">
+      <div class="bei-text">
+        <div class="bei-name"></div>
+        <div class="bei-note">⚔️ Équipement inclus dans la vente — récupéré par l'acheteur</div>
+      </div>
+      <div class="bei-val"></div>
     </div>
     <div class="buyers-list" id="buyersList"></div>
   </div>
@@ -1310,28 +1404,66 @@ function sellResult(){
 }
 
 // ── INVENTORY ──
+function getCreatureIncomeSec(id, qty) {
+  const c = CREATURES.find(x => x.id === id);
+  if (!c) return 0;
+  return INCOME_RATE[c.rarity] * qty * getLevelMult(id) * getSetIncMult(c.rarity) * (1 + getEquipIncBonus(id) + getFamilyIncBonus(id)) * getPrestigeIncomeMultiplier();
+}
+
 function renderInventory(){
   const grid=document.getElementById('invGrid');
-  const entries=Object.entries(inventory)
-    .filter(([id])=>{const c=CREATURES.find(x=>x.id===id);return c&&(invFilter==='all'||c.rarity===invFilter);})
-    .map(([id,qty])=>({c:CREATURES.find(x=>x.id===id),qty})).filter(e=>e.c);
-  if(!entries.length){grid.innerHTML='<div class="inv-empty">Ton inventaire est vide. Ouvre des coffres !</div>';return;}
-  grid.innerHTML=entries.map(({c,qty})=>
-    `<div class="inv-card rarity-${c.rarity}">
-      <img src="${c.img}" alt="${c.name}">
-      ${(creatureLevels[c.id]||1)>1?`<div class="level-badge">Niv. ${creatureLevels[c.id]}</div>`:''}
-      <div class="inv-name">${c.name}</div>
-      <div class="inv-qty">×${qty}</div>
-      <div class="eq-slot" data-cid="${c.id}">
-        ${creatureEquipment[c.id]
-          ? (() => { const eq=EQUIPMENT.find(e=>e.id===creatureEquipment[c.id]); return eq?`<img src="${eq.img}" alt="${eq.name}"><div><div class="eq-slot-name">${eq.name}</div><div class="eq-slot-label" style="color:#4ade80">${eq.desc}</div></div>`:''; })()
-          : '<div class="eq-slot-label">⚔️ Équiper un item</div>'
-        }
-      </div>
-      <button class="inv-sell-btn" data-id="${c.id}" data-val="${c.sell}">Vendre 🪙${c.sell.toLocaleString('fr-FR')}</button>
-      ${(creatureLevels[c.id]||1)<5?`<button class="btn-upgrade" data-uid="${c.id}">⭐ Améliorer (${getUpgradeCost(c,creatureLevels[c.id]||1).toLocaleString('fr-FR')}🪙)</button>`:`<div style="font-size:0.68rem;color:#fbbf24;margin-top:3px;font-weight:800">⭐ MAX</div>`}
-      ${qty>=3&&c.rarity!=='legendary'?`<button class="btn-fusion" data-fid="${c.id}">🔮 Fusionner ×3</button>`:''}
-    </div>`).join('');
+  const RARITY_ORDER = ['common','rare','epic','legendary'];
+  const allEntries=Object.entries(inventory)
+    .map(([id,qty])=>({c:CREATURES.find(x=>x.id===id),qty,id})).filter(e=>e.c);
+  const filtered = allEntries.filter(e => invFilter==='all' || e.c.rarity===invFilter);
+  if(!filtered.length){grid.innerHTML='<div class="inv-empty">Ton inventaire est vide. Ouvre des coffres !</div>';return;}
+
+  // Group by rarity
+  const groups = {};
+  RARITY_ORDER.forEach(r => { groups[r] = []; });
+  filtered.forEach(e => { if(groups[e.c.rarity]) groups[e.c.rarity].push(e); });
+
+  const RARITY_LABELS = { common:'Communs', rare:'Rares', epic:'Épiques', legendary:'Légendaires' };
+  const RARITY_ICONS  = { common:'⬜', rare:'🔵', epic:'🟣', legendary:'🟡' };
+
+  let html_out = '';
+  RARITY_ORDER.forEach(rarity => {
+    const group = groups[rarity];
+    if (!group.length) return;
+    // Total income for this rarity group
+    const groupIncome = group.reduce((sum, e) => sum + getCreatureIncomeSec(e.id, e.qty), 0);
+    const incStr = groupIncome >= 1 ? groupIncome.toFixed(1) + '/sec' : (groupIncome * 60).toFixed(1) + '/min';
+    html_out += `<div class="inv-rarity-header rh-${rarity}" style="grid-column:1/-1">
+      <span>${RARITY_ICONS[rarity]} ${RARITY_LABELS[rarity]} (${group.length} type${group.length>1?'s':''})</span>
+      <span class="rh-income">⚡ ${incStr}</span>
+    </div>`;
+    html_out += group.map(({c,qty})=>{
+      const incSec = getCreatureIncomeSec(c.id, qty);
+      const incLabel = incSec >= 0.01 ? (incSec >= 1 ? incSec.toFixed(2)+'/s' : (incSec*60).toFixed(1)+'/min') : '<1/min';
+      const EQ_SELL_VALUES = { common: 120, rare: 360, epic: 800, legendary: 2000 };
+      const eq = creatureEquipment[c.id] ? EQUIPMENT.find(e=>e.id===creatureEquipment[c.id]) : null;
+      const sellLabel = eq
+        ? `Vendre 🪙${(c.sell + EQ_SELL_VALUES[eq.rarity]).toLocaleString('fr-FR')} (avec ⚔️)`
+        : `Vendre 🪙${c.sell.toLocaleString('fr-FR')}`;
+      return `<div class="inv-card rarity-${c.rarity}">
+        <img src="${c.img}" alt="${c.name}">
+        ${(creatureLevels[c.id]||1)>1?`<div class="level-badge">Niv. ${creatureLevels[c.id]}</div>`:''}
+        <div class="inv-name">${c.name}</div>
+        <div class="inv-qty">×${qty}</div>
+        <div class="inv-income">⚡ <span class="inc-num">${incLabel}</span></div>
+        <div class="eq-slot" data-cid="${c.id}">
+          ${eq
+            ? `<img src="${eq.img}" alt="${eq.name}"><div><div class="eq-slot-name">${eq.name}</div><div class="eq-slot-label" style="color:#4ade80">${eq.desc}</div></div>`
+            : '<div class="eq-slot-label">⚔️ Équiper un item</div>'
+          }
+        </div>
+        <button class="inv-sell-btn" data-id="${c.id}" data-val="${c.sell}">${sellLabel}</button>
+        ${(creatureLevels[c.id]||1)<5?`<button class="btn-upgrade" data-uid="${c.id}">⭐ Améliorer (${getUpgradeCost(c,creatureLevels[c.id]||1).toLocaleString('fr-FR')}🪙)</button>`:`<div style="font-size:0.68rem;color:#fbbf24;margin-top:3px;font-weight:800">⭐ MAX</div>`}
+        ${qty>=3&&c.rarity!=='legendary'?`<button class="btn-fusion" data-fid="${c.id}">🔮 Fusionner ×3</button>`:''}
+      </div>`;
+    }).join('');
+  });
+  grid.innerHTML = html_out;
   grid.querySelectorAll('.inv-sell-btn').forEach(btn=>{
     btn.addEventListener('click',function(){
       const id=this.dataset.id;
@@ -1350,18 +1482,32 @@ function renderInventory(){
   });
 }
 function sellAll(){
+  const rarity = document.getElementById('sell-all-rarity').value;
+  // Creatures currently equipped cannot be mass-sold
+  const equippedIds = new Set(Object.values(creatureEquipment).flatMap(e => Object.values(e)));
+  const RARITY_LABELS = { common:'Communs', rare:'Rares', epic:'Épiques', legendary:'Légendaires', all:'Tout' };
   let total=0, count=0;
   Object.entries(inventory).forEach(([id,qty])=>{
     const c=CREATURES.find(x=>x.id===id);
-    if(c&&c.rarity==='common'){total+=c.sell*qty;count+=qty;delete inventory[id];}
+    if(!c||qty<=0) return;
+    if(rarity !== 'all' && c.rarity !== rarity) return;
+    // For legendary/epic, keep equipped ones
+    const sellQty = equippedIds.has(id) ? qty - 1 : qty;
+    if(sellQty <= 0) return;
+    total += c.sell * sellQty;
+    count += sellQty;
+    if(sellQty >= qty) delete inventory[id];
+    else inventory[id] -= sellQty;
   });
   if(total>0){
     setCoins(coins+total);
     trackStat('sold', count);
     trackStat('earned', total);
     saveGame();
-    toast('💰 Vendu pour '+total.toLocaleString('fr-FR')+' pièces !');
-  } else toast('Aucun commun à vendre.');
+    toast('💰 '+RARITY_LABELS[rarity]+' vendus pour '+total.toLocaleString('fr-FR')+' 🪙 ('+count+' créatures)');
+  } else {
+    toast('Aucune créature à vendre dans cette catégorie.');
+  }
   renderInventory();renderCollection();updateTaxDisplay();
 }
 
@@ -1734,6 +1880,8 @@ function saveGame() {
     claimedFamilyBonuses,
     unlockedAchievements,
     lastWheelSpin,
+    prestigeLevel,
+    prestigeTotalEarned,
   };
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
@@ -1765,6 +1913,8 @@ function loadGame() {
     claimedFamilyBonuses    = d.claimedFamilyBonuses    ?? {};
     unlockedAchievements   = d.unlockedAchievements   ?? {};
     lastWheelSpin          = d.lastWheelSpin          ?? 0;
+    prestigeLevel          = d.prestigeLevel          ?? 0;
+    prestigeTotalEarned    = d.prestigeTotalEarned    ?? 0;
     return true;
   } catch(e) { return false; }
 }
@@ -2579,6 +2729,145 @@ function showCollView(view) {
 }
 
 
+
+// ── RENAISSANCE (PRESTIGE) ──
+// Each prestige star requires more total coins earned than the last
+// Boosts are permanent and stack
+
+const PRESTIGE_LEVELS = [
+  { star:1, required:50000,   startCoins:2500,   incomeBonus:0.20, chestBonus:1,   label:'🌟 Étoile 1',  desc:'Recommence avec 2 500 🪙 + 20% revenu passif + 1 coffre offert' },
+  { star:2, required:150000,  startCoins:6000,   incomeBonus:0.50, chestBonus:2,   label:'🌟🌟 Étoile 2', desc:'Recommence avec 6 000 🪙 + 50% revenu passif + 2 coffres offerts' },
+  { star:3, required:400000,  startCoins:12000,  incomeBonus:1.00, chestBonus:3,   label:'🌟×3 Étoile 3', desc:'Recommence avec 12 000 🪙 + 100% revenu passif + 3 coffres offerts' },
+  { star:4, required:1000000, startCoins:25000,  incomeBonus:2.00, chestBonus:5,   label:'💫 Étoile 4',   desc:'Recommence avec 25 000 🪙 + 200% revenu passif + 5 coffres offerts' },
+  { star:5, required:3000000, startCoins:60000,  incomeBonus:5.00, chestBonus:10,  label:'👑 Étoile 5',   desc:'Recommence avec 60 000 🪙 + 500% revenu passif + 10 coffres + coffre légendaire' },
+];
+
+let prestigeLevel = 0; // current star count (0 = virgin)
+let prestigeTotalEarned = 0; // lifetime coins earned (includes current run)
+
+function getPrestigeIncomeMultiplier() {
+  let mult = 1;
+  for (let i = 0; i < prestigeLevel; i++) {
+    mult += PRESTIGE_LEVELS[i].incomeBonus;
+  }
+  return mult;
+}
+
+function getNextPrestige() {
+  return PRESTIGE_LEVELS[prestigeLevel] || null;
+}
+
+function updatePrestigeSection() {
+  const btn = document.getElementById('prestigeBtn');
+  const lockMsg = document.getElementById('prestigeLockMsg');
+  const desc = document.getElementById('prestigeDesc');
+  const stars = document.querySelectorAll('#prestigeStars .p-star');
+  const badge = document.getElementById('prestigeBadge');
+  const fill = document.getElementById('prestigeProgressFill');
+
+  // Update stars
+  stars.forEach((s, i) => s.classList.toggle('lit', i < prestigeLevel));
+
+  // Badge
+  if (prestigeLevel > 0 && badge) {
+    badge.style.display = 'inline-flex';
+    badge.textContent = PRESTIGE_LEVELS[prestigeLevel - 1].label;
+  } else if (badge) {
+    badge.style.display = 'none';
+  }
+
+  const next = getNextPrestige();
+  if (!next) {
+    if (desc) desc.textContent = '👑 Tu as atteint le niveau maximum de Renaissance !';
+    if (btn) { btn.disabled = true; btn.textContent = '👑 Maître de la Renaissance'; }
+    if (lockMsg) lockMsg.textContent = '';
+    if (fill) fill.style.width = '100%';
+    return;
+  }
+
+  const earned = stats.earned + coins;
+  const prevReq = prestigeLevel > 0 ? PRESTIGE_LEVELS[prestigeLevel - 1].required : 0;
+  const progress = Math.min(1, Math.max(0, (prestigeTotalEarned - prevReq) / (next.required - prevReq)));
+  if (fill) fill.style.width = (progress * 100).toFixed(1) + '%';
+
+  const canPrestige = prestigeTotalEarned >= next.required;
+
+  if (desc) desc.textContent = next.desc;
+  if (btn) {
+    btn.disabled = !canPrestige;
+    btn.textContent = canPrestige ? '🌟 Lancer la Renaissance !' : '🌟 Renaissance (verrouillée)';
+  }
+  if (lockMsg) {
+    if (canPrestige) {
+      lockMsg.textContent = '✅ Condition atteinte ! Tu peux te lancer.';
+      lockMsg.style.color = '#4ade80';
+    } else {
+      const missing = (next.required - prestigeTotalEarned).toLocaleString('fr-FR');
+      lockMsg.textContent = 'Il te faut encore ' + missing + ' 🪙 gagnés au total.';
+      lockMsg.style.color = 'var(--text2)';
+    }
+  }
+}
+
+function openPrestigeModal() {
+  const next = getNextPrestige();
+  if (!next) return;
+  const list = document.getElementById('prestigeGainsList');
+  const bonusMultStr = '+' + Math.round(next.incomeBonus * 100) + '% revenu passif (permanent, cumulatif)';
+  const rows = [
+    { icon:'🪙', label:'Pièces de départ', val: next.startCoins.toLocaleString('fr-FR') + ' 🪙' },
+    { icon:'⚡', label:'Bonus revenu passif', val: bonusMultStr },
+    { icon:'📦', label:'Coffres offerts', val: next.chestBonus + ' coffre(s) Rare' + (next.star === 5 ? ' + 1 Légendaire 🔥' : '') },
+    { icon:'❌', label:'Pièces actuelles', val: 'Perdues (reset)' },
+    { icon:'❌', label:'Inventaire', val: 'Vidé (reset)' },
+    { icon:'✅', label:'Équipements', val: 'Conservés' },
+    { icon:'✅', label:'Succès & Collection', val: 'Conservés' },
+  ];
+  list.innerHTML = rows.map(r =>
+    `<div class="pg-row"><span class="pg-icon">${r.icon}</span><span style="flex:1;color:var(--text2)">${r.label}</span><span class="pg-val">${r.val}</span></div>`
+  ).join('');
+  document.getElementById('prestigeModal').style.display = 'flex';
+}
+
+function confirmPrestige() {
+  const next = getNextPrestige();
+  if (!next || prestigeTotalEarned < next.required) return;
+  document.getElementById('prestigeModal').style.display = 'none';
+
+  prestigeLevel++;
+
+  // Reset run state
+  inventory = {};
+  ownedChests = [];
+  creatureLevels = {};
+  expeditions = [];
+  claimedSetBonuses = {};
+  claimedFamilyBonuses = {};
+  dailyQuestIds = [];
+  questProgress = {};
+  questClaimed = {};
+  taxNextIn = 60;
+
+  // Grant prestige rewards
+  setCoins(next.startCoins);
+  for (let i = 0; i < next.chestBonus; i++) ownedChests.push({ type: 'rare' });
+  if (next.star === 5) ownedChests.push({ type: 'legendary' });
+
+  saveGame();
+
+  // Visual fanfare
+  toast('🌟 RENAISSANCE ' + next.label + ' ! Bonne chance !');
+  setTimeout(() => {
+    showTab('home');
+    renderHome();
+    updatePrestigeSection();
+    updateIncomeDisplay();
+    updateTaxDisplay();
+    renderInventory();
+    renderCollection();
+  }, 300);
+}
+
 // ── TAX SYSTEM ──
 // Franchise: 5 creatures free. Above that, progressive tax per creature/min
 // Tier thresholds for extra creatures (above 5):
@@ -2787,6 +3076,15 @@ function openBuyerModal(creature, source) {
   pendingSale = { creature, source };
 
   // Show creature info
+  // Check if creature has equipment equipped
+  const _eqId = creatureEquipment[creature.id];
+  const _eqItem = _eqId ? EQUIPMENT.find(e => e.id === _eqId) : null;
+  // Equipment sell value: 60% of chest cost based on rarity
+  const EQ_SELL_VALUES = { common: 120, rare: 360, epic: 800, legendary: 2000 };
+  const equipSellVal = _eqItem ? (EQ_SELL_VALUES[_eqItem.rarity] || 100) : 0;
+  pendingSale.equipItem = _eqItem || null;
+  pendingSale.equipSellVal = equipSellVal;
+
   document.getElementById('buyerCreatureImg').src = creature.img;
   document.getElementById('buyerCreatureName').textContent = creature.name;
   document.getElementById('buyerBasePrice').textContent = creature.sell.toLocaleString('fr-FR');
@@ -2796,10 +3094,21 @@ function openBuyerModal(creature, source) {
   // Always include one bad + one good to make it interesting
   const selected = shuffled.slice(0, 3);
 
+  // Show equip banner
+  const _equipBanner = document.getElementById('buyerEquipBanner');
+  if (_eqItem && _equipBanner) {
+    _equipBanner.style.display = 'flex';
+    _equipBanner.querySelector('img').src = _eqItem.img;
+  _equipBanner.querySelector('.bei-name').textContent = _eqItem.name;
+    _equipBanner.querySelector('.bei-val').textContent = '+' + equipSellVal.toLocaleString('fr-FR') + ' 🪙';
+  } else if (_equipBanner) {
+    _equipBanner.style.display = 'none';
+  }
+
   const list = document.getElementById('buyersList');
   list.innerHTML = selected.map(buyer => {
     const mult = getMultiplier(buyer, creature.rarity);
-    const offered = Math.round(creature.sell * mult);
+    const offered = Math.round(creature.sell * mult) + equipSellVal;
     const cls = getMultClass(mult);
     const pct = Math.round(mult * 100);
     const isRandom = buyer.id === 'alchemist' || buyer.id === 'pirate';
@@ -2833,7 +3142,11 @@ function closeBuyerModal() {
 
 function confirmSale(price) {
   if (!pendingSale) return;
-  const { creature, source } = pendingSale;
+  const { creature, source, equipItem } = pendingSale;
+  // If creature had equipment, remove it (sold with creature)
+  if (equipItem && creatureEquipment[creature.id] === equipItem.id) {
+    delete creatureEquipment[creature.id];
+  }
   // Remove from inventory
   if (inventory[creature.id] > 0) {
     inventory[creature.id]--;
@@ -2865,7 +3178,7 @@ function getTotalIncome() {
     if (c) total += INCOME_RATE[c.rarity] * qty * getLevelMult(id) * getSetIncMult(c.rarity) * (1 + getEquipIncBonus(id) + getFamilyIncBonus(id));
   }
   if (hasBuff('income2x')) total *= 2;
-  return total;
+  return total * getPrestigeIncomeMultiplier();
 }
 
 function updateIncomeDisplay() {
@@ -2965,6 +3278,7 @@ window.addEventListener('DOMContentLoaded',function(){
     });
   });
   document.getElementById('sell-all-btn').addEventListener('click',sellAll);
+  document.getElementById('prestigeBtn').addEventListener('click',openPrestigeModal);
   document.getElementById('btn-view-creatures').addEventListener('click',function(){
     this.classList.add('active');
     document.getElementById('btn-view-equipment').classList.remove('active');
@@ -2988,6 +3302,7 @@ window.addEventListener('DOMContentLoaded',function(){
   startPassiveIncome();
   startTaxSystem();
   updateTaxDisplay();
+  updatePrestigeSection();
   initDailyQuests();
   initDailyEvent();
   updateFreeChestBtns();
@@ -2997,5 +3312,20 @@ window.addEventListener('DOMContentLoaded',function(){
   checkAchievements();
 });
 </script>
+
+<!-- PRESTIGE MODAL -->
+<div class="prestige-modal" id="prestigeModal" style="display:none">
+  <div class="prestige-modal-box">
+    <div style="font-size:3rem;margin-bottom:8px" id="prestigeModalIcon">🌟</div>
+    <h2>Renaissance</h2>
+    <p>Tu vas tout recommencer depuis le début… mais plus fort ! Ton inventaire et tes pièces sont réinitialisés.</p>
+    <div class="prestige-gains-list" id="prestigeGainsList"></div>
+    <div class="prestige-modal-btns">
+      <button class="prestige-cancel-btn" onclick="document.getElementById('prestigeModal').style.display='none'">Annuler</button>
+      <button class="prestige-confirm-btn" onclick="confirmPrestige()">✨ Confirmer</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
