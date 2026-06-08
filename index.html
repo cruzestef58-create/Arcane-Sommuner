@@ -308,6 +308,52 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .coll-card.locked img{filter:grayscale(1) opacity(0.4);}
 .coll-name{font-size:0.8rem;font-weight:700;margin-bottom:4px;}
 .coll-rarity{font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+
+/* ── FREE CHEST ── */
+.free-chest-bar{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:18px;}
+.btn-free-chest{flex:1;padding:10px 18px;border-radius:10px;font-weight:800;font-size:0.9rem;cursor:pointer;border:none;transition:all 0.2s;}
+.btn-free-chest.ready{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;animation:pulse-free 1.5s ease-in-out infinite;}
+.btn-free-chest.waiting{background:rgba(255,255,255,0.06);color:var(--text2);cursor:not-allowed;}
+@keyframes pulse-free{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,0.5)}50%{box-shadow:0 0 0 10px rgba(168,85,247,0)}}
+
+/* ── QUESTS ── */
+#tab-quests{padding-bottom:40px;}
+.quests-section{margin-bottom:28px;}
+.quests-section h3{font-size:1rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.quest-card{display:flex;align-items:center;gap:14px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;transition:border-color 0.2s;}
+.quest-card.done{border-color:rgba(74,222,128,0.4);background:rgba(74,222,128,0.05);}
+.quest-card.claimed{opacity:0.45;}
+.quest-icon{font-size:1.6rem;width:40px;text-align:center;flex-shrink:0;}
+.quest-body{flex:1;}
+.quest-desc{font-weight:700;font-size:0.9rem;margin-bottom:4px;}
+.quest-prog{font-size:0.75rem;color:var(--text2);}
+.quest-prog-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;margin-top:5px;overflow:hidden;}
+.quest-prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#a855f7);border-radius:4px;transition:width 0.4s;}
+.quest-reward{text-align:right;flex-shrink:0;}
+.quest-reward .reward-val{font-weight:900;font-size:1rem;color:#fbbf24;}
+.btn-claim{padding:6px 14px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-weight:800;font-size:0.78rem;border:none;cursor:pointer;margin-top:4px;}
+.btn-claim:disabled{opacity:0.4;cursor:not-allowed;}
+.quest-check{font-size:1.2rem;}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+.stat-box .stat-val{font-size:1.6rem;font-weight:900;color:#a78bfa;}
+.stat-box .stat-label{font-size:0.72rem;color:var(--text2);margin-top:4px;}
+
+/* ── FUSION ── */
+.btn-fusion{padding:4px 10px;background:rgba(168,85,247,0.2);border:1px solid rgba(168,85,247,0.4);color:#a78bfa;border-radius:6px;cursor:pointer;font-size:0.7rem;font-weight:700;margin-top:4px;}
+.btn-fusion:hover{background:rgba(168,85,247,0.4);}
+.fusion-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:500;display:flex;align-items:center;justify-content:center;}
+.fusion-panel{background:var(--surface);border:1px solid rgba(168,85,247,0.5);border-radius:20px;padding:32px;text-align:center;max-width:380px;animation:pop 0.35s cubic-bezier(0.34,1.56,0.64,1);}
+.fusion-panel h3{font-size:1.2rem;font-weight:900;margin-bottom:8px;}
+.fusion-panel p{font-size:0.85rem;color:var(--text2);margin-bottom:20px;}
+.fusion-cards{display:flex;justify-content:center;gap:10px;margin-bottom:20px;}
+.fusion-card{width:70px;height:70px;border-radius:10px;object-fit:contain;border:2px solid rgba(168,85,247,0.4);background:rgba(255,255,255,0.04);}
+.fusion-arrow{font-size:1.5rem;margin-bottom:20px;}
+.btn-fuse{padding:12px 28px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-weight:900;font-size:1rem;border:none;border-radius:12px;cursor:pointer;}
+.btn-fuse-cancel{padding:10px 24px;background:rgba(255,255,255,0.06);color:var(--text2);font-weight:700;font-size:0.9rem;border:1px solid var(--border);border-radius:12px;cursor:pointer;margin-left:10px;}
+
 </style>
 </head>
 <body>
@@ -333,6 +379,7 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
   <button class="tab" id="tab-shop-btn">🛒 Boutique</button>
   <button class="tab" id="tab-inv-btn">🎒 Inventaire</button>
   <button class="tab" id="tab-coll-btn">📖 Collection</button>
+  <button class="tab" id="tab-quests-btn">📜 Quêtes</button>
 </div>
 
 <!-- HOME -->
@@ -341,6 +388,7 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <h2>🎁 Mes Coffres</h2>
     <span id="chestCount">0 coffre(s)</span>
   </div>
+  <div class="free-chest-bar"><button class="btn-free-chest waiting" id="freeChestBtn" disabled><span id="freeChestLabel">⏳ Chargement...</span></button></div>
   <div class="chest-grid" id="chestGrid"></div>
 </div>
 
@@ -456,6 +504,33 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <div class="coll-progress"><div class="coll-bar" id="collBar" style="width:0%"></div></div>
   </div>
   <div class="coll-grid" id="collGrid"></div>
+</div>
+
+
+<!-- QUESTS -->
+<div id="tab-quests" class="tab-content">
+
+  <div class="quests-section">
+    <h3>🎁 Coffre gratuit</h3>
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:12px">Un coffre de bois offert toutes les 20 minutes !</p>
+    <div id="freeChestQuestBar" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;">
+      <button class="btn-free-chest waiting" id="freeChestBtn2" disabled><span id="freeChestLabel2">⏳ Chargement...</span></button>
+    </div>
+  </div>
+
+  <div class="quests-section">
+    <h3>📜 Quêtes du jour <span id="questResetTimer" style="font-size:0.72rem;color:var(--text2);font-weight:400;margin-left:8px"></span></h3>
+    <div id="questsList"></div>
+  </div>
+
+  <div class="quests-section">
+    <h3>📊 Statistiques</h3>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div style="margin-top:16px;text-align:center">
+      <button id="btn-reset-save" style="padding:8px 20px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:700">🗑️ Réinitialiser la sauvegarde</button>
+    </div>
+  </div>
+
 </div>
 
 <!-- CHEST OPEN OVERLAY -->
@@ -702,8 +777,13 @@ async function triggerOpenBox(boxType){
   pending={creature,rarity};
   showResult(creature,rarity,isNew);
   inventory[creature.id]=(inventory[creature.id]||0)+1;
+  trackStat('chestsOpened');
+  if(rarity==='rare')trackStat('gotRare');
+  if(rarity==='epic')trackStat('gotEpic');
+  if(rarity==='legendary')trackStat('gotLegendary');
   renderInventory();renderCollection();
   updateIncomeDisplay();
+  saveGame();
   spinning=false;
 }
 
@@ -813,6 +893,7 @@ function renderInventory(){
       <div class="inv-name">${c.name}</div>
       <div class="inv-qty">×${qty}</div>
       <button class="inv-sell-btn" data-id="${c.id}" data-val="${c.sell}">Vendre 🪙${c.sell.toLocaleString('fr-FR')}</button>
+      ${qty>=3&&c.rarity!=='legendary'?`<button class="btn-fusion" data-fid="${c.id}">🔮 Fusionner ×3</button>`:''}
     </div>`).join('');
   grid.querySelectorAll('.inv-sell-btn').forEach(btn=>{
     btn.addEventListener('click',function(){
@@ -820,6 +901,9 @@ function renderInventory(){
       const creature=CREATURES.find(x=>x.id===id);
       if(creature) openBuyerModal(creature, 'inventory');
     });
+  });
+  grid.querySelectorAll('.btn-fusion').forEach(btn=>{
+    btn.addEventListener('click',function(){ openFusionModal(this.dataset.fid); });
   });
 }
 function sellAll(){
@@ -846,6 +930,257 @@ function renderCollection(){
     </div>`).join('');
 }
 
+
+// ── STATS ──
+let stats = { chestsOpened:0, sold:0, earned:0, passiveEarned:0, gotRare:0, gotEpic:0, gotLegendary:0, fused:0 };
+function trackStat(key, amount=1){
+  if(stats[key]!==undefined) stats[key]+=amount;
+  else stats[key]=amount;
+  checkQuestProgress();
+  renderStatsGrid();
+}
+function renderStatsGrid(){
+  const g=document.getElementById('statsGrid');
+  if(!g)return;
+  g.innerHTML=[
+    {v:stats.chestsOpened, l:'Coffres ouverts'},
+    {v:stats.sold,         l:'Créatures vendues'},
+    {v:Math.floor(stats.passiveEarned), l:'Revenu passif 🪙'},
+    {v:stats.gotRare,      l:'Rares obtenues'},
+    {v:stats.gotEpic,      l:'Épiques obtenues'},
+    {v:stats.gotLegendary, l:'Légendaires ! ⭐'},
+    {v:stats.fused,        l:'Fusions réalisées'},
+    {v:coins,              l:'Pièces actuelles'},
+  ].map(({v,l})=>`<div class="stat-box"><div class="stat-val">${v.toLocaleString('fr-FR')}</div><div class="stat-label">${l}</div></div>`).join('');
+}
+
+// ── FREE CHEST ──
+const FREE_CHEST_MS = 20 * 60 * 1000;
+let lastFreeChest = 0;
+function claimFreeChest(){
+  const now=Date.now();
+  if(now-lastFreeChest < FREE_CHEST_MS) return;
+  lastFreeChest=now;
+  ownedChests.push({type:'starter'});
+  toast('🎁 Coffre gratuit récupéré !');
+  renderHome();
+  updateFreeChestBtns();
+}
+function updateFreeChestBtns(){
+  const now=Date.now();
+  const remaining=FREE_CHEST_MS-(now-lastFreeChest);
+  const ready=remaining<=0;
+  ['freeChestBtn','freeChestBtn2'].forEach(id=>{
+    const btn=document.getElementById(id);
+    const lbl=document.getElementById(id==='freeChestBtn'?'freeChestLabel':'freeChestLabel2');
+    if(!btn||!lbl)return;
+    btn.disabled=!ready;
+    btn.className='btn-free-chest '+(ready?'ready':'waiting');
+    if(ready){lbl.textContent='🎁 Réclamer le coffre gratuit !';}
+    else{const m=Math.floor(remaining/60000),s=Math.floor((remaining%60000)/1000);lbl.textContent=`⏳ Prochain coffre dans ${m}m ${s.toString().padStart(2,'0')}s`;}
+  });
+}
+setInterval(updateFreeChestBtns,1000);
+
+// ── DAILY QUESTS ──
+const QUEST_POOL=[
+  {id:'open3',   icon:'📦', desc:'Ouvrir 3 coffres',             stat:'chestsOpened', target:3,    reward:300  },
+  {id:'open8',   icon:'📦', desc:'Ouvrir 8 coffres',             stat:'chestsOpened', target:8,    reward:700  },
+  {id:'open15',  icon:'📦', desc:'Ouvrir 15 coffres',            stat:'chestsOpened', target:15,   reward:1200 },
+  {id:'sell3',   icon:'💰', desc:'Vendre 3 créatures',           stat:'sold',         target:3,    reward:250  },
+  {id:'sell8',   icon:'💰', desc:'Vendre 8 créatures',           stat:'sold',         target:8,    reward:600  },
+  {id:'rare3',   icon:'💎', desc:'Obtenir 3 créatures rares',    stat:'gotRare',      target:3,    reward:500  },
+  {id:'epic1',   icon:'✨', desc:'Obtenir 1 créature épique',    stat:'gotEpic',      target:1,    reward:800  },
+  {id:'epic3',   icon:'✨', desc:'Obtenir 3 créatures épiques',  stat:'gotEpic',      target:3,    reward:1800 },
+  {id:'leg1',    icon:'⭐', desc:'Obtenir 1 légendaire',         stat:'gotLegendary', target:1,    reward:3000 },
+  {id:'fuse1',   icon:'🔮', desc:'Réaliser 1 fusion',            stat:'fused',        target:1,    reward:400  },
+  {id:'fuse3',   icon:'🔮', desc:'Réaliser 3 fusions',           stat:'fused',        target:3,    reward:1000 },
+  {id:'earn5k',  icon:'🪙', desc:'Avoir 5000 pièces',            stat:'earned',       target:5000, reward:500  },
+];
+
+let dailyQuestIds=[];
+let questProgress={};
+let questClaimed={};
+let lastQuestReset=0;
+
+function initDailyQuests(){
+  const now=Date.now();
+  const todayMidnight=new Date(); todayMidnight.setHours(0,0,0,0);
+  if(lastQuestReset<todayMidnight.getTime()){
+    const shuffled=[...QUEST_POOL].sort(()=>Math.random()-0.5);
+    dailyQuestIds=shuffled.slice(0,3).map(q=>q.id);
+    questProgress={};
+    questClaimed={};
+    lastQuestReset=todayMidnight.getTime();
+  }
+  renderQuests();
+}
+
+function checkQuestProgress(){
+  if(!dailyQuestIds.length)return;
+  dailyQuestIds.forEach(id=>{
+    const q=QUEST_POOL.find(x=>x.id===id);
+    if(!q||questClaimed[id])return;
+    questProgress[id]=Math.min(stats[q.stat]||0, q.target);
+  });
+  renderQuests();
+}
+
+function claimQuest(id){
+  const q=QUEST_POOL.find(x=>x.id===id);
+  if(!q||questClaimed[id])return;
+  if((questProgress[id]||0)<q.target)return;
+  questClaimed[id]=true;
+  setCoins(coins+q.reward);
+  toast(`🎉 Quête complétée ! +${q.reward.toLocaleString('fr-FR')} 🪙`);
+  renderQuests();
+}
+
+function renderQuests(){
+  const list=document.getElementById('questsList');
+  if(!list)return;
+  if(!dailyQuestIds.length){list.innerHTML='<p style="color:var(--text2);font-size:0.85rem">Chargement...</p>';return;}
+  list.innerHTML=dailyQuestIds.map(id=>{
+    const q=QUEST_POOL.find(x=>x.id===id);
+    if(!q)return'';
+    const prog=questProgress[id]||0;
+    const done=prog>=q.target;
+    const claimed=questClaimed[id];
+    const pct=Math.min(100,Math.round(prog/q.target*100));
+    const cls=claimed?'claimed':done?'done':'';
+    return `<div class="quest-card ${cls}">
+      <div class="quest-icon">${q.icon}</div>
+      <div class="quest-body">
+        <div class="quest-desc">${q.desc}</div>
+        <div class="quest-prog">${prog} / ${q.target}</div>
+        <div class="quest-prog-bar"><div class="quest-prog-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="quest-reward">
+        <div class="reward-val">+${q.reward.toLocaleString('fr-FR')} 🪙</div>
+        ${claimed?'<div class="quest-check">✅</div>':'<button class="btn-claim" data-qid="'+id+'" '+(done?'':'disabled')+'>Réclamer</button>'}
+      </div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.btn-claim').forEach(btn=>{
+    btn.addEventListener('click',function(){claimQuest(this.dataset.qid);});
+  });
+  // Reset timer
+  const rt=document.getElementById('questResetTimer');
+  if(rt){
+    const now=Date.now();
+    const tomorrow=new Date(); tomorrow.setHours(24,0,0,0);
+    const diff=tomorrow.getTime()-now;
+    const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);
+    rt.textContent=`Reset dans ${h}h ${m}m`;
+  }
+}
+setInterval(renderQuests,60000);
+
+// ── FUSION ──
+let fusionPending=null;
+const RARITY_UP={common:'rare',rare:'epic',epic:'legendary'};
+
+function openFusionModal(creatureId){
+  const c=CREATURES.find(x=>x.id===creatureId);
+  if(!c||(inventory[c.id]||0)<3)return;
+  if(!RARITY_UP[c.rarity]){toast('Déjà au niveau maximum !');return;}
+  fusionPending=c;
+  const nextRarity=RARITY_UP[c.rarity];
+  const candidates=CREATURES.filter(x=>x.rarity===nextRarity);
+  const preview=candidates[Math.floor(Math.random()*candidates.length)];
+  const modal=document.createElement('div');
+  modal.className='fusion-modal-backdrop';
+  modal.id='fusionModalEl';
+  modal.innerHTML=`<div class="fusion-panel">
+    <h3>🔮 Fusion de créatures</h3>
+    <p>Combine 3 <strong>${c.name}</strong> pour invoquer une créature de rang supérieur !</p>
+    <div class="fusion-cards">
+      <img class="fusion-card" src="${c.img}" alt="${c.name}">
+      <img class="fusion-card" src="${c.img}" alt="${c.name}">
+      <img class="fusion-card" src="${c.img}" alt="${c.name}">
+    </div>
+    <div class="fusion-arrow">⬇️</div>
+    <p style="color:var(--${nextRarity});font-weight:800;font-size:0.9rem;margin-bottom:16px">Une créature ${RARITY_LABEL[nextRarity]} aléatoire</p>
+    <div>
+      <button class="btn-fuse" id="btn-do-fuse">✨ Fusionner</button>
+      <button class="btn-fuse-cancel" id="btn-cancel-fuse">Annuler</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+  document.getElementById('btn-do-fuse').addEventListener('click', doFusion);
+  document.getElementById('btn-cancel-fuse').addEventListener('click', closeFusionModal);
+}
+
+function closeFusionModal(){
+  const m=document.getElementById('fusionModalEl');
+  if(m)m.remove();
+  fusionPending=null;
+}
+
+function doFusion(){
+  if(!fusionPending)return;
+  const c=fusionPending;
+  if((inventory[c.id]||0)<3){toast('Pas assez de créatures !');closeFusionModal();return;}
+  inventory[c.id]-=3;
+  if(inventory[c.id]<=0)delete inventory[c.id];
+  const nextRarity=RARITY_UP[c.rarity];
+  const candidates=CREATURES.filter(x=>x.rarity===nextRarity);
+  const result=candidates[Math.floor(Math.random()*candidates.length)];
+  inventory[result.id]=(inventory[result.id]||0)+1;
+  trackStat('fused');
+  if(nextRarity==='rare')trackStat('gotRare');
+  if(nextRarity==='epic')trackStat('gotEpic');
+  if(nextRarity==='legendary')trackStat('gotLegendary');
+  closeFusionModal();
+  toast(`🔮 Fusion ! Tu obtiens : ${result.name} (${RARITY_LABEL[nextRarity]}) !`);
+  triggerEffects(nextRarity);
+  renderInventory();renderCollection();updateIncomeDisplay();
+}
+
+
+// ── SAVE / LOAD ──
+const SAVE_KEY = 'arcane_summoner_save';
+
+function saveGame() {
+  const data = {
+    v: 2,
+    coins,
+    inventory,
+    ownedChests,
+    stats,
+    lastFreeChest,
+    dailyQuestIds,
+    questProgress,
+    questClaimed,
+    lastQuestReset,
+  };
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    if (!d || d.v < 2) return false;
+    coins       = d.coins       ?? 1000;
+    inventory   = d.inventory   ?? {};
+    ownedChests = d.ownedChests ?? [];
+    stats       = Object.assign({ chestsOpened:0, sold:0, earned:0, passiveEarned:0, gotRare:0, gotEpic:0, gotLegendary:0, fused:0 }, d.stats ?? {});
+    lastFreeChest  = d.lastFreeChest  ?? 0;
+    dailyQuestIds  = d.dailyQuestIds  ?? [];
+    questProgress  = d.questProgress  ?? {};
+    questClaimed   = d.questClaimed   ?? {};
+    lastQuestReset = d.lastQuestReset ?? 0;
+    return true;
+  } catch(e) { return false; }
+}
+
+// Autosave every 10 seconds
+setInterval(saveGame, 10000);
+
 // ── TABS ──
 function showTab(name){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
@@ -855,6 +1190,7 @@ function showTab(name){
   if(name==='inventory')renderInventory();
   if(name==='collection')renderCollection();
   if(name==='home')renderHome();
+  if(name==='quests'){renderQuests();renderStatsGrid();}
 }
 
 // ── BUYER SYSTEM ──
@@ -943,6 +1279,9 @@ function confirmSale(price) {
     if (inventory[creature.id] === 0) delete inventory[creature.id];
   }
   setCoins(coins + price);
+  trackStat('sold');
+  trackStat('earned', price);
+  saveGame();
   const diff = price - creature.sell;
   const sign = diff >= 0 ? '+' : '';
   toast('💰 Vendu ' + price.toLocaleString('fr-FR') + '🪙 (' + sign + diff + ' vs prix de base)');
@@ -1022,6 +1361,15 @@ window.addEventListener('DOMContentLoaded',function(){
   document.getElementById('tab-shop-btn').addEventListener('click',()=>showTab('shop'));
   document.getElementById('tab-inv-btn').addEventListener('click',()=>showTab('inventory'));
   document.getElementById('tab-coll-btn').addEventListener('click',()=>showTab('collection'));
+  document.getElementById('tab-quests-btn').addEventListener('click',()=>showTab('quests'));
+  document.getElementById('freeChestBtn').addEventListener('click',claimFreeChest);
+  document.getElementById('freeChestBtn2').addEventListener('click',claimFreeChest);
+  document.getElementById('btn-reset-save').addEventListener('click',function(){
+    if(confirm('Réinitialiser toute la progression ? Cette action est irréversible !')){
+      localStorage.removeItem(SAVE_KEY);
+      location.reload();
+    }
+  });
 
   // Shop buy buttons
   document.querySelectorAll('.btn-buy,.btn-buy-x3').forEach(btn=>{
@@ -1048,10 +1396,14 @@ window.addEventListener('DOMContentLoaded',function(){
   });
   document.getElementById('sell-all-btn').addEventListener('click',sellAll);
 
-  setCoins(1000);
+  const hasSave = loadGame();
+  setCoins(hasSave ? coins : 1000);
+  if (hasSave) toast('💾 Progression restaurée !');
   renderHome();
   renderCollection();
   startPassiveIncome();
+  initDailyQuests();
+  updateFreeChestBtns();
 });
 </script>
 </body>
