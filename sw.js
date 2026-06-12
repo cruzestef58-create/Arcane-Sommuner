@@ -1,9 +1,5 @@
 const CACHE = 'arcane-v2';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json'
-];
+const ASSETS = ['/manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
@@ -18,7 +14,13 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+  // HTML toujours depuis le réseau pour avoir la dernière version
+  if (e.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/') {
+    e.respondWith(fetch(e.request).catch(() => caches.match('/')));
+    return;
+  }
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).catch(() => caches.match('/')))
+    caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
