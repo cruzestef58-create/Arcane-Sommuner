@@ -487,6 +487,10 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .inv-card.rarity-rare{border-color:rgba(59,130,246,0.5);}
 .inv-card.rarity-epic{border-color:rgba(168,85,247,0.5);}
 .inv-card.rarity-legendary{border-color:rgba(245,158,11,0.5);}
+.inv-card.ex-creature{border-color:rgba(245,158,11,0.8);box-shadow:0 0 12px rgba(245,158,11,0.35),inset 0 0 12px rgba(245,158,11,0.07);animation:ex-card-glow 3s ease-in-out infinite;}
+@keyframes ex-card-glow{0%,100%{box-shadow:0 0 10px rgba(245,158,11,0.3),inset 0 0 10px rgba(245,158,11,0.05);}50%{box-shadow:0 0 22px rgba(245,158,11,0.7),inset 0 0 16px rgba(245,158,11,0.12);}}
+.inv-card.just-fused{animation:just-fused-pop 0.7s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes just-fused-pop{0%{transform:scale(0.5);opacity:0;filter:brightness(3);}60%{transform:scale(1.08);opacity:1;filter:brightness(1.4);}100%{transform:scale(1);opacity:1;filter:brightness(1);}}
 .inv-card img{display:block;background:rgba(255,255,255,0.04);}
 .inv-card .inv-name{font-size:0.8rem;font-weight:700;margin-bottom:4px;}
 .inv-card .inv-qty{font-size:0.75rem;color:var(--text2);margin-bottom:6px;}
@@ -3522,6 +3526,7 @@ function openExEvolveModal(creatureId) {
     inventory[c.id] = Math.max(0, (inventory[c.id] || 0) - EX_COST);
     if (inventory[c.id] <= 0) delete inventory[c.id];
     exCreatures[c.id] = true;
+    lastFusedResultId = c.id;
     updateIncomeDisplay();
     renderInventory();
     renderCollection();
@@ -3608,7 +3613,7 @@ function renderInventory(){
         ? `Vendre 🪙${(c.sell + EQ_SELL_VALUES[eq.rarity]).toLocaleString('fr-FR')} (avec ⚔️)`
         : `Vendre 🪙${c.sell.toLocaleString('fr-FR')}`;
       const isEx = !!exCreatures[c.id];
-      return `<div class="inv-card rarity-${c.rarity}${isEx?' ex-creature':''}">
+      return `<div class="inv-card rarity-${c.rarity}${isEx?' ex-creature':''}" data-fused="${c.id}">
         <div class="creature-img-frame" style="position:relative;${c.imgPos?'--img-pos:'+c.imgPos:''}">
           <img src="${c.img}" alt="${c.name}">
           ${isEx?'<div class="ex-badge">EX</div>':''}
@@ -3632,6 +3637,11 @@ function renderInventory(){
     }).join('');
   });
   grid.innerHTML = html_out;
+  if (lastFusedResultId) {
+    const card = grid.querySelector(`.inv-card[data-fused="${lastFusedResultId}"]`);
+    if (card) card.classList.add('just-fused');
+    lastFusedResultId = null;
+  }
   grid.querySelectorAll('.inv-sell-btn').forEach(btn=>{
     btn.addEventListener('click',function(){
       const id=this.dataset.id;
@@ -3922,6 +3932,7 @@ function removeCreatureFromInventory(id, qty=1) {
 
 // ── FUSION ──
 let fusionPending=null;
+let lastFusedResultId=null;
 const RARITY_UP={common:'rare',rare:'epic',epic:'legendary',legendary:'mythic',mythic:'cosmique'};
 
 function openFusionModal(creatureId){
@@ -3981,6 +3992,7 @@ function doFusion(){
   if(nextRarity==='legendary')trackStat('gotLegendary');
   if(nextRarity==='mythic')trackStat('gotMythic');
   closeFusionModal();
+  lastFusedResultId = result.id;
   toast(`🔮 Fusion ! Tu obtiens : ${result.name} (${RARITY_LABEL[nextRarity]}) !`);
   triggerEffects(nextRarity);
   renderInventory();renderCollection();updateIncomeDisplay();
