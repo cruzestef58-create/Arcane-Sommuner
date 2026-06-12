@@ -3522,9 +3522,8 @@ function openExEvolveModal(creatureId) {
   const onConfirm = () => {
     btn.removeEventListener('click', onConfirm);
     ov.classList.remove('active');
-    // Consommer les copies (garde 1)
-    inventory[c.id] = Math.max(0, (inventory[c.id] || 0) - EX_COST);
-    if (inventory[c.id] <= 0) delete inventory[c.id];
+    // Consommer les copies (garde 1 dans l'inventaire)
+    inventory[c.id] = Math.max(1, (inventory[c.id] || 0) - EX_COST + 1);
     exCreatures[c.id] = true;
     lastFusedResultId = c.id;
     updateIncomeDisplay();
