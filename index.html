@@ -4026,7 +4026,7 @@ function loadGame() {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return false;
     const d = JSON.parse(raw);
-    if (!d || d.v < 2) return false; // v2+ compatible
+    if (!d) return false;
     coins       = d.coins       ?? 1000;
     inventory   = d.inventory   ?? {};
     ownedChests = d.ownedChests ?? [];
