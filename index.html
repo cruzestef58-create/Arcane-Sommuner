@@ -3863,7 +3863,7 @@ function renderInvCard(c, qty) {
     </div>
     <button class="inv-sell-btn" data-id="${c.id}" data-val="${c.sell}">${sellLabel}</button>
     ${(creatureLevels[c.id]||1)<5?`<button class="btn-upgrade" data-uid="${c.id}">⭐ Améliorer (${getUpgradeCost(c,creatureLevels[c.id]||1).toLocaleString('fr-FR')}🪙)</button>`:`<div style="font-size:0.68rem;color:#fbbf24;margin-top:3px;font-weight:800">⭐ MAX</div>`}
-    ${qty>=3&&c.rarity!=='unique'?`<button class="btn-fusion" data-fid="${c.id}">🔮 Fusionner ×3</button>`:''}
+    ${qty>=3&&c.rarity!=='mythic'&&c.rarity!=='cosmique'&&c.rarity!=='unique'?`<button class="btn-fusion" data-fid="${c.id}">🔮 Fusionner ×3</button>`:''}
     ${!isEx && qty >= EX_COST ? `<button class="btn-evolve-ex" data-exid="${c.id}">⭐ Évoluer EX (×${EX_COST})</button>` : ''}
     <button class="btn-inspect" data-inspect="${c.id}">🔍 Inspecter</button>
   </div>`;
@@ -4211,7 +4211,7 @@ function removeCreatureFromInventory(id, qty=1) {
 // ── FUSION ──
 let fusionPending=null;
 let lastFusedResultId=null;
-const RARITY_UP={common:'rare',rare:'epic',epic:'legendary',legendary:'mythic',mythic:'cosmique',cosmique:'unique'};
+const RARITY_UP={common:'rare',rare:'epic',epic:'legendary',legendary:'mythic',mythic:'cosmique'};
 
 function openFusionModal(creatureId){
   const c=CREATURES.find(x=>x.id===creatureId);
