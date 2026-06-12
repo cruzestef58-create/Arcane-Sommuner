@@ -501,8 +501,8 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .coll-grid{display:flex;flex-wrap:wrap;gap:12px;max-width:1100px;margin:0 auto;}
 .coll-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;width:150px;text-align:center;}
 .coll-card.owned{border-color:rgba(168,85,247,0.5);}
-.coll-card.coll-sold{opacity:0.6;filter:grayscale(0.4);}
-.coll-sold-badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:rgba(255,255,255,0.6);font-size:0.5rem;font-weight:800;padding:1px 5px;border-radius:6px;white-space:nowrap;letter-spacing:0.5px;}
+.coll-card.coll-sold{opacity:0.82;}
+.coll-sold-badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);background:rgba(180,0,0,0.85);color:#fff;font-size:0.5rem;font-weight:800;padding:1px 6px;border-radius:6px;white-space:nowrap;letter-spacing:0.5px;}
 .coll-card img{display:block;background:rgba(255,255,255,0.04);}
 .coll-card.locked img{filter:grayscale(1) opacity(0.4);}
 .coll-name{font-size:0.8rem;font-weight:700;margin-bottom:4px;}
@@ -1612,7 +1612,7 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
     <div class="income-wrap" id="incomeWrap" style="display:none">
-      ⚡ <span id="incomeDisplay">0</span><span>/sec</span>
+      ⚡ <span id="incomeDisplay">0</span><span>/sec</span><span id="prestigeIncBonus" style="display:none;font-size:0.7rem;color:#a78bfa;margin-left:4px;font-weight:800;"></span>
     </div>
     <div class="tax-wrap free" id="taxWrap" style="display:none">
       🏛️ <span id="taxDisplay">0</span><span>/min</span>
@@ -5511,11 +5511,21 @@ function updateIncomeDisplay() {
   const rate = getTotalIncome();
   const wrap = document.getElementById('incomeWrap');
   const disp = document.getElementById('incomeDisplay');
+  const prestigeTag = document.getElementById('prestigeIncBonus');
   if (rate > 0) {
     wrap.style.display = 'flex';
     disp.textContent = rate >= 1 ? rate.toFixed(1) : rate.toFixed(2);
   } else {
     wrap.style.display = 'none';
+  }
+  if (prestigeTag) {
+    const mult = getPrestigeIncomeMultiplier();
+    if (mult > 1) {
+      prestigeTag.style.display = 'inline';
+      prestigeTag.textContent = '×' + mult.toFixed(2) + '★';
+    } else {
+      prestigeTag.style.display = 'none';
+    }
   }
 }
 
