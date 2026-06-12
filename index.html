@@ -3793,7 +3793,7 @@ function openExEvolveModal(creatureId) {
     saveGame();
     SOUNDS.ex();
     toast(`✨ ${c.name} EX débloqué ! Revenu ×7 !`);
-    triggerEffects('legendary');
+    triggerEffects(c.rarity);
   };
   btn.addEventListener('click', onConfirm);
   ov.addEventListener('click', function onBg(e) {
