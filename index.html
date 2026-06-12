@@ -3494,7 +3494,7 @@ function sellResult(){
 const EX_COST = 5; // copies nécessaires pour évoluer en EX
 
 function getExIncomeBonus(id) {
-  return exCreatures[id] ? 0.75 : 0; // +75% revenu si EX
+  return exCreatures[id] ? 6.0 : 0; // ×7 revenu si EX (mieux que 5 copies normales)
 }
 
 function openExEvolveModal(creatureId) {
@@ -3512,7 +3512,7 @@ function openExEvolveModal(creatureId) {
   document.getElementById('exResultFrame').style.background = `linear-gradient(145deg, #92400e, #fbbf24, #b45309, #fde68a, #78350f)`;
   document.getElementById('exCreatureName').textContent = c.name + ' EX';
   document.getElementById('exBonusText').innerHTML =
-    `🗑️ <b>${EX_COST} copies</b> consommées<br>⚡ Revenu passif <b style="color:#4ade80">+75%</b><br>✨ Cadre doré permanent`;
+    `🗑️ <b>${EX_COST} copies</b> consommées<br>⚡ Revenu passif <b style="color:#4ade80">×7 (mieux que 5 copies !)</b><br>✨ Cadre doré permanent`;
 
   ov.classList.add('active');
   fxLightning('#f59e0b');
@@ -3522,14 +3522,15 @@ function openExEvolveModal(creatureId) {
   const onConfirm = () => {
     btn.removeEventListener('click', onConfirm);
     ov.classList.remove('active');
-    // Les copies restent, EX est juste un bonus débloqué
+    // Consommer les 5 copies, garde 1 EX
+    inventory[c.id] = Math.max(1, (inventory[c.id] || 0) - EX_COST + 1);
     exCreatures[c.id] = true;
     lastFusedResultId = c.id;
     updateIncomeDisplay();
     renderInventory();
     renderCollection();
     saveGame();
-    toast(`✨ ${c.name} EX débloqué ! Revenu +75% !`);
+    toast(`✨ ${c.name} EX débloqué ! Revenu ×7 !`);
     triggerEffects('legendary');
   };
   btn.addEventListener('click', onConfirm);
