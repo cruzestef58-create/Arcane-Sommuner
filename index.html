@@ -3575,6 +3575,38 @@ function updateCollBadges() {
   setBadge('btn-coll-familles', unclaimedFam);
 }
 
+function renderInvCard(c, qty) {
+  const incSec = getCreatureIncomeSec(c.id, qty);
+  const incLabel = incSec >= 0.01 ? incSec.toFixed(3)+'/sec' : '<0.01/sec';
+  const EQ_SELL_VALUES = { common:120, rare:360, epic:800, legendary:2000, mythic:15000, cosmique:75000, unique:200000 };
+  const eq = creatureEquipment[c.id] ? EQUIPMENT.find(e=>e.id===creatureEquipment[c.id]) : null;
+  const sellLabel = eq
+    ? `Vendre 🪙${(c.sell + EQ_SELL_VALUES[eq.rarity]).toLocaleString('fr-FR')} (avec ⚔️)`
+    : `Vendre 🪙${c.sell.toLocaleString('fr-FR')}`;
+  const isEx = !!exCreatures[c.id];
+  return `<div class="inv-card rarity-${c.rarity}${isEx?' ex-creature':''}" data-fused="${c.id}">
+    <div class="creature-img-frame" style="position:relative;${c.imgPos?'--img-pos:'+c.imgPos:''}">
+      <img src="${c.img}" alt="${c.name}">
+      ${isEx?'<div class="ex-badge">EX</div>':''}
+    </div>
+    ${(creatureLevels[c.id]||1)>1?`<div class="level-badge">Niv. ${creatureLevels[c.id]}</div>`:''}
+    <div class="inv-name">${c.name}${isEx?' <span style="color:#fbbf24;font-size:0.7rem">EX</span>':''}</div>
+    <div class="inv-qty">×${qty}</div>
+    <div class="inv-income">⚡ <span class="inc-num">${incLabel}</span></div>
+    <div class="eq-slot" data-cid="${c.id}">
+      ${eq
+        ? `<img src="${eq.img}" alt="${eq.name}"><div><div class="eq-slot-name">${eq.name}</div><div class="eq-slot-label" style="color:#4ade80">${eq.desc}</div></div>`
+        : '<div class="eq-slot-label">⚔️ Équiper un item</div>'
+      }
+    </div>
+    <button class="inv-sell-btn" data-id="${c.id}" data-val="${c.sell}">${sellLabel}</button>
+    ${(creatureLevels[c.id]||1)<5?`<button class="btn-upgrade" data-uid="${c.id}">⭐ Améliorer (${getUpgradeCost(c,creatureLevels[c.id]||1).toLocaleString('fr-FR')}🪙)</button>`:`<div style="font-size:0.68rem;color:#fbbf24;margin-top:3px;font-weight:800">⭐ MAX</div>`}
+    ${qty>=3&&c.rarity!=='mythic'&&c.rarity!=='unique'?`<button class="btn-fusion" data-fid="${c.id}">🔮 Fusionner ×3</button>`:''}
+    ${!isEx && qty >= EX_COST ? `<button class="btn-evolve-ex" data-exid="${c.id}">⭐ Évoluer EX (×${EX_COST})</button>` : ''}
+    <button class="btn-inspect" data-inspect="${c.id}">🔍 Inspecter</button>
+  </div>`;
+}
+
 function renderInventory(){
   updateCollBadges();
   const grid=document.getElementById('invGrid');
@@ -3593,8 +3625,22 @@ function renderInventory(){
   const RARITY_ICONS  = { common:'⬜', rare:'🔵', epic:'🟣', legendary:'🟡', mythic:'🩷', unique:'✦' };
 
   let html_out = '';
+
+  // ── Section EX en premier ──
+  const exEntries = filtered.filter(e => !!exCreatures[e.c.id]);
+  if (exEntries.length) {
+    const exIncome = exEntries.reduce((s,e) => s + getCreatureIncomeSec(e.c.id, e.qty), 0);
+    const exIncStr = exIncome >= 1 ? exIncome.toFixed(1)+'/sec' : (exIncome*60).toFixed(1)+'/min';
+    html_out += `<div class="inv-rarity-header" style="grid-column:1/-1;background:linear-gradient(90deg,rgba(245,158,11,0.18),rgba(251,191,36,0.08));border:1px solid rgba(245,158,11,0.3);color:#fbbf24;">
+      <span>⭐ EX (${exEntries.length} type${exEntries.length>1?'s':''})</span>
+      <span class="rh-income">⚡ ${exIncStr}</span>
+    </div>`;
+    html_out += exEntries.map(({c,qty}) => renderInvCard(c, qty)).join('');
+    html_out += `<div style="grid-column:1/-1;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0 4px;"></div>`;
+  }
+
   RARITY_ORDER.forEach(rarity => {
-    const group = groups[rarity];
+    const group = groups[rarity].filter(e => !exCreatures[e.c.id]); // exclure les EX
     if (!group.length) return;
     // Total income for this rarity group
     const groupIncome = group.reduce((sum, e) => sum + getCreatureIncomeSec(e.id, e.qty), 0);
@@ -3603,37 +3649,7 @@ function renderInventory(){
       <span>${RARITY_ICONS[rarity]} ${RARITY_LABELS[rarity]} (${group.length} type${group.length>1?'s':''})</span>
       <span class="rh-income">⚡ ${incStr}</span>
     </div>`;
-    html_out += group.map(({c,qty})=>{
-      const incSec = getCreatureIncomeSec(c.id, qty);
-      const incLabel = incSec >= 0.01 ? incSec.toFixed(3)+'/sec' : '<0.01/sec';
-      const EQ_SELL_VALUES = { common: 120, rare: 360, epic: 800, legendary: 2000, mythic: 15000, cosmique: 75000, unique: 200000 };
-      const eq = creatureEquipment[c.id] ? EQUIPMENT.find(e=>e.id===creatureEquipment[c.id]) : null;
-      const sellLabel = eq
-        ? `Vendre 🪙${(c.sell + EQ_SELL_VALUES[eq.rarity]).toLocaleString('fr-FR')} (avec ⚔️)`
-        : `Vendre 🪙${c.sell.toLocaleString('fr-FR')}`;
-      const isEx = !!exCreatures[c.id];
-      return `<div class="inv-card rarity-${c.rarity}${isEx?' ex-creature':''}" data-fused="${c.id}">
-        <div class="creature-img-frame" style="position:relative;${c.imgPos?'--img-pos:'+c.imgPos:''}">
-          <img src="${c.img}" alt="${c.name}">
-          ${isEx?'<div class="ex-badge">EX</div>':''}
-        </div>
-        ${(creatureLevels[c.id]||1)>1?`<div class="level-badge">Niv. ${creatureLevels[c.id]}</div>`:''}
-        <div class="inv-name">${c.name}${isEx?' <span style="color:#fbbf24;font-size:0.7rem">EX</span>':''}</div>
-        <div class="inv-qty">×${qty}</div>
-        <div class="inv-income">⚡ <span class="inc-num">${incLabel}</span></div>
-        <div class="eq-slot" data-cid="${c.id}">
-          ${eq
-            ? `<img src="${eq.img}" alt="${eq.name}"><div><div class="eq-slot-name">${eq.name}</div><div class="eq-slot-label" style="color:#4ade80">${eq.desc}</div></div>`
-            : '<div class="eq-slot-label">⚔️ Équiper un item</div>'
-          }
-        </div>
-        <button class="inv-sell-btn" data-id="${c.id}" data-val="${c.sell}">${sellLabel}</button>
-        ${(creatureLevels[c.id]||1)<5?`<button class="btn-upgrade" data-uid="${c.id}">⭐ Améliorer (${getUpgradeCost(c,creatureLevels[c.id]||1).toLocaleString('fr-FR')}🪙)</button>`:`<div style="font-size:0.68rem;color:#fbbf24;margin-top:3px;font-weight:800">⭐ MAX</div>`}
-        ${qty>=3&&c.rarity!=='mythic'&&c.rarity!=='unique'?`<button class="btn-fusion" data-fid="${c.id}">🔮 Fusionner ×3</button>`:''}
-        ${!isEx && qty >= EX_COST ? `<button class="btn-evolve-ex" data-exid="${c.id}">⭐ Évoluer EX (×${EX_COST})</button>` : ''}
-        <button class="btn-inspect" data-inspect="${c.id}">🔍 Inspecter</button>
-      </div>`;
-    }).join('');
+    html_out += group.map(({c,qty}) => renderInvCard(c,qty)).join('');
   });
   grid.innerHTML = html_out;
   if (lastFusedResultId) {
