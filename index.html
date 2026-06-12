@@ -1628,7 +1628,7 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <div class="tax-wrap free" id="taxWrap" style="display:none">
       🏛️ <span id="taxDisplay">0</span><span>/min</span>
     </div>
-    <button id="musicToggleBtn" onclick="toggleMusic()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0;border-radius:8px;padding:6px 10px;font-size:0.95rem;cursor:pointer;font-weight:800;white-space:nowrap;">🎵</button>
+<button id="musicToggleBtn" onclick="toggleMusic()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0;border-radius:8px;padding:6px 10px;font-size:0.95rem;cursor:pointer;font-weight:800;white-space:nowrap;">🎵</button>
     <button id="soundToggleBtn" onclick="toggleSound()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0;border-radius:8px;padding:6px 10px;font-size:0.95rem;cursor:pointer;font-weight:800;white-space:nowrap;">🔊</button>
     <button id="optionsBtn" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0;border-radius:8px;padding:6px 14px;font-size:0.85rem;cursor:pointer;font-weight:800;white-space:nowrap;">⚙️ Options</button>
     <button id="prestigeBtn3" style="background:linear-gradient(135deg,rgba(124,58,237,0.25),rgba(219,39,119,0.2));border:1px solid rgba(167,139,250,0.45);color:#c4b5fd;border-radius:8px;padding:6px 12px;font-size:0.85rem;cursor:pointer;font-weight:800;white-space:nowrap;">✨ <span id="headerPrestigeBadge">Renaissance</span></button>
@@ -1955,6 +1955,29 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 </div>
 
 <!-- BUYER MODAL -->
+<!-- ── GRAND DEAL MODAL ── -->
+<div id="grandDealModal" style="display:none;position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);">
+  <div style="background:linear-gradient(135deg,#1a0a2e,#0f0a1a);border:2px solid rgba(255,255,255,0.6);border-radius:20px;padding:32px 28px;max-width:400px;width:92vw;text-align:center;box-shadow:0 0 60px rgba(255,255,255,0.15),0 0 120px rgba(168,85,247,0.2);position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,0.07),transparent 70%);pointer-events:none;"></div>
+    <div style="font-size:3rem;margin-bottom:8px;">👁️</div>
+    <h2 style="font-size:1.2rem;font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:0.05em;">L'ENTITÉ VOUS OBSERVE</h2>
+    <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);margin-bottom:18px;font-style:italic;">"Tu as accumulé plus de richesse que l'univers ne peut en contenir... Je te propose un marché."</p>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-bottom:10px;">TU SACRIFIES</div>
+      <div style="color:#f87171;font-weight:800;font-size:1rem;margin-bottom:4px;">💰 Toutes tes pièces</div>
+      <div style="color:#f87171;font-weight:800;font-size:1rem;">🎴 Toutes tes créatures</div>
+      <div style="margin:14px 0;color:rgba(255,255,255,0.3);font-size:1.2rem;">⬇️</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-bottom:10px;">TU REÇOIS</div>
+      <div style="color:#ffffff;font-weight:900;font-size:1.1rem;text-shadow:0 0 20px rgba(255,255,255,0.8);">✦ 1 CRÉATURE UNIQUE ✦</div>
+      <div id="grandDealCreatureName" style="color:rgba(255,255,255,0.7);font-size:0.8rem;margin-top:4px;"></div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="refuseGrandDeal()" style="flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);border-radius:10px;padding:12px;font-size:0.9rem;cursor:pointer;font-weight:700;">❌ Refuser</button>
+      <button onclick="acceptGrandDeal()" style="flex:1;background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;color:#fff;border-radius:10px;padding:12px;font-size:0.9rem;cursor:pointer;font-weight:900;box-shadow:0 0 20px rgba(124,58,237,0.5);">✦ ACCEPTER</button>
+    </div>
+  </div>
+</div>
+
 <div id="buyerModal">
   <div class="buyer-backdrop" id="buyer-backdrop"></div>
   <div class="buyer-panel">
@@ -2333,7 +2356,61 @@ function pickRandom(rarity){
   return p[Math.floor(Math.random()*p.length)];
 }
 function pickVisual(){const r=Math.random();return pickRandom(r<0.55?'common':r<0.82?'rare':r<0.97?'epic':r<0.9985?'legendary':r<0.9999?'mythic':'cosmique');}
-function setCoins(n){coins=n;document.getElementById('coinDisplay').textContent=coins.toLocaleString('fr-FR');checkAchievements();updatePrestigeSection();}
+let grandDealShown = false;
+let grandDealCreature = null;
+
+function setCoins(n){
+  coins=n;
+  document.getElementById('coinDisplay').textContent=coins.toLocaleString('fr-FR');
+  checkAchievements();
+  updatePrestigeSection();
+  if(coins >= 10_000_000_000 && !grandDealShown) showGrandDeal();
+}
+
+function showGrandDeal() {
+  grandDealShown = true;
+  const uniques = CREATURES.filter(c => c.rarity === 'unique');
+  // Proposer une unique que le joueur n'a pas encore
+  const missing = uniques.filter(c => !inventory[c.id]);
+  grandDealCreature = missing.length ? missing[Math.floor(Math.random()*missing.length)] : uniques[Math.floor(Math.random()*uniques.length)];
+  document.getElementById('grandDealCreatureName').textContent = grandDealCreature.name;
+  document.getElementById('grandDealModal').style.display = 'flex';
+  SOUNDS.prestige();
+  triggerEffects('unique');
+}
+
+function refuseGrandDeal() {
+  document.getElementById('grandDealModal').style.display = 'none';
+  // Peut réapparaître à 100 milliards
+  grandDealShown = false;
+  coins = Math.floor(coins * 0.01); // garder 1% comme punition symbolique
+  setCoins(coins);
+  toast('👁️ "Très bien... mais tu reviendras." −99% de tes pièces.');
+}
+
+function acceptGrandDeal() {
+  document.getElementById('grandDealModal').style.display = 'none';
+  // Tout effacer
+  inventory = {};
+  exCreatures = {};
+  creatureLevels = {};
+  coins = 0;
+  document.getElementById('coinDisplay').textContent = '0';
+  // Donner la créature unique
+  const c = grandDealCreature;
+  inventory[c.id] = 1;
+  discoveredCreatures.add(c.id);
+  saveGame();
+  renderInventory(); renderCollection(); updateIncomeDisplay();
+  // Reveal spectaculaire
+  setTimeout(() => {
+    showResult(c, 'unique', true);
+    triggerEffects('unique');
+    SOUNDS.prestige();
+    SOUNDS.ex();
+  }, 400);
+  toast('✦ Le marché est conclu. ' + c.name + ' t\'appartient.');
+}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ── HOME ──
