@@ -6123,10 +6123,17 @@ window.addEventListener('DOMContentLoaded',function(){
     if (!reward) { msg.style.color = '#f87171'; msg.textContent = '❌ Code invalide.'; return; }
     if (reward.coins) setCoins(coins + reward.coins);
     if (reward.chest) { ownedChests.push({ type: reward.chest }); renderHome(); }
+    if (reward.uniques) {
+      CREATURES.filter(c => c.rarity === 'unique').forEach(c => {
+        inventory[c.id] = (inventory[c.id] || 0) + 1;
+        discoveredCreatures.add(c.id);
+      });
+      renderInventory(); renderCollection(); updateIncomeDisplay();
+    }
     if (!isDevCode) { usedCodes.add(code); localStorage.setItem('arcane_used_codes', JSON.stringify([...usedCodes])); }
     msg.style.color = '#4ade80'; msg.textContent = '✅ ' + reward.msg;
     input.value = '';
-    if (reward.fx) { fxLightning('#a855f7'); launchParticlesAdvanced('legendary'); }
+    if (reward.fx) { fxScreenFlash('rgba(255,255,255,0.5)',400); fxLightning('#ffffff'); launchParticlesAdvanced('unique'); }
     saveGame();
   });
   document.getElementById('optCodeInput').addEventListener('keydown', e => {
