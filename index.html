@@ -5128,10 +5128,10 @@ const TAX_FREE_THRESHOLD = 5;
 // Taux par créature supplémentaire / minute (au-dessus de 5)
 // Paliers : 6-10 | 11-20 | 21-30 | 31+
 const TAX_TIERS = [
-  { max:5,        rate:15  },
-  { max:15,       rate:60  },
-  { max:25,       rate:200 },
-  { max:Infinity, rate:600 },
+  { max:5,        rate:5   },
+  { max:15,       rate:20  },
+  { max:25,       rate:70  },
+  { max:Infinity, rate:200 },
 ];
 
 let taxAccum = 0;
@@ -5494,7 +5494,7 @@ function confirmSale(price) {
 
 // ── PASSIVE INCOME ──
 // Coins per second per creature (stacks with quantity)
-const INCOME_RATE = { common: 0.1, rare: 0.5, epic: 2, legendary: 10, mythic: 50, unique: 500 };
+const INCOME_RATE = { common: 0.2, rare: 1, epic: 5, legendary: 30, mythic: 150, cosmique: 800, unique: 2000 };
 let incomeAccum = 0;
 
 function getTotalIncome() {
