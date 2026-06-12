@@ -5680,13 +5680,11 @@ window.addEventListener('DOMContentLoaded',function(){
     const reader = new FileReader();
     reader.onload = ev => {
       try {
-        const parsed = JSON.parse(ev.target.result);
-        if (!parsed.version) throw new Error();
-        if (!confirm('Remplacer ta sauvegarde actuelle par ce fichier ?')) return;
-        localStorage.setItem(SAVE_KEY, ev.target.result);
+        const parsed = JSON.parse(ev.target.result.trim());
+        localStorage.setItem(SAVE_KEY, JSON.stringify(parsed));
         toast('✅ Importée ! Rechargement...');
-        setTimeout(() => location.reload(), 1200);
-      } catch { toast('❌ Fichier invalide.'); }
+        setTimeout(() => location.reload(), 800);
+      } catch(err) { toast('❌ Fichier invalide : ' + err.message); }
     };
     reader.readAsText(file);
     e.target.value = '';
