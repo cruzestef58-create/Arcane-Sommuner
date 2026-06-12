@@ -2285,6 +2285,24 @@ let chestToOpen = null; // index in ownedChests
 
 // ── UTILS ──
 function roll(rates){const r=Math.random()*100;let c=0;for(const[k,v]of Object.entries(rates)){c+=v;if(r<c)return k;}return'common';}
+
+// Applique un bonus de rareté selon le niveau de prestige
+// Chaque étoile transfère un % des common/rare vers epic/legendary
+function applyPrestigeRates(rates) {
+  if (!prestigeLevel) return { ...rates };
+  const r = { ...rates };
+  // Par étoile : -2% common, -1% rare, +1.5% epic, +1% legendary, +0.3% mythic, +0.2% cosmique
+  const shift = prestigeLevel;
+  const take = Math.min(r.common || 0, 2 * shift);
+  const takeR = Math.min(r.rare || 0, 1 * shift);
+  r.common = Math.max(0, (r.common || 0) - take);
+  r.rare   = Math.max(0, (r.rare   || 0) - takeR);
+  r.epic        = (r.epic        || 0) + take * 0.5 + takeR * 0.4;
+  r.legendary   = (r.legendary   || 0) + take * 0.3 + takeR * 0.35;
+  r.mythic      = (r.mythic      || 0) + take * 0.13 + takeR * 0.15;
+  r.cosmique    = (r.cosmique    !== undefined) ? r.cosmique + take * 0.07 + takeR * 0.1 : r.cosmique;
+  return r;
+}
 function pickRandom(rarity){
   const p=CREATURES.filter(c=>c.rarity===rarity);
   if(p.length===0){
@@ -2616,7 +2634,7 @@ async function triggerOpenBox3(boxType) {
   lastBoxType = boxType;
   const mythicEqCount = countMythicEquipped();
   const results = [1,2,3].map(() => {
-    let creatureRates = { ...BOXES[boxType].rates };
+    let creatureRates = applyPrestigeRates(BOXES[boxType].rates);
     if (mythicEqCount > 0 && creatureRates.unique !== undefined) {
       const bonus = mythicEqCount * 0.0002;
       creatureRates.unique = (creatureRates.unique||0) + bonus;
@@ -2749,7 +2767,7 @@ async function openUniversalKey() {
 
   // Roll résultat
   const mythicEqCount = countMythicEquipped();
-  let creatureRates = { ...BOXES['universal'].rates };
+  let creatureRates = applyPrestigeRates(BOXES['universal'].rates);
   if (mythicEqCount > 0) creatureRates.unique = (creatureRates.unique || 0) + mythicEqCount * 0.0002;
   const rarity   = roll(creatureRates);
   const creature = pickRandom(rarity);
@@ -3027,7 +3045,7 @@ async function triggerOpenBox(boxType){
   }
   // Boost taux unique créature selon mythiques équipés (+0.0002% par mythique)
   const mythicEqCount = countMythicEquipped();
-  let creatureRates = { ...BOXES[boxType].rates };
+  let creatureRates = applyPrestigeRates(BOXES[boxType].rates);
   if (mythicEqCount > 0 && creatureRates.unique !== undefined) {
     const bonus = mythicEqCount * 0.0002;
     creatureRates.unique = (creatureRates.unique || 0) + bonus;
