@@ -3641,7 +3641,7 @@ function renderInvCard(c, qty) {
 function renderInventory(){
   updateCollBadges();
   const grid=document.getElementById('invGrid');
-  const RARITY_ORDER = ['common','rare','epic','legendary','mythic','unique'];
+  const RARITY_ORDER = ['common','rare','epic','legendary','mythic','cosmique','unique'];
   const allEntries=Object.entries(inventory)
     .map(([id,qty])=>({c:CREATURES.find(x=>x.id===id),qty,id})).filter(e=>e.c);
   const filtered = allEntries.filter(e => invFilter==='all' || e.c.rarity===invFilter);
