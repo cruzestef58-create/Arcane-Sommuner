@@ -1,0 +1,24 @@
+{
+  "name": "Arcane Summoner",
+  "short_name": "Arcane",
+  "description": "Jeu de gacha — invoque des créatures, fusionne, évolue !",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0a1a",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "images_game/dieu_univers.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images_game/dieu_univers.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
