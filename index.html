@@ -6010,6 +6010,7 @@ window.addEventListener('DOMContentLoaded',function(){
     'arcane2024':    { coins: 50000,  msg: '✨ +50 000 pièces ! Bonne chance !', fx: false },
     'bestiau':       { chest: 'legendary', msg: '📦 Un Méga Coffre ajouté !', fx: false },
     'kosmik':        { chest: 'cosmic', msg: '💎 Un Cristal Cosmique ajouté !', fx: true },
+    'univers':       { uniques: true, msg: '✦ Les 2 créatures Uniques obtenues ! ✦', fx: true },
   };
   const usedCodes = new Set(JSON.parse(localStorage.getItem('arcane_used_codes') || '[]'));
 
@@ -6038,7 +6039,14 @@ window.addEventListener('DOMContentLoaded',function(){
     }
     if (reward.coins) { setCoins(coins + reward.coins); trackStat('earned', reward.coins); }
     if (reward.chest) { ownedChests.push({ type: reward.chest }); renderHome(); }
-    if (reward.fx) { fxCoinRain(25); fxScreenFlash('rgba(245,158,11,0.3)', 300); fxShake('hard'); launchParticlesAdvanced('legendary', window.innerWidth/2, window.innerHeight/2); }
+    if (reward.uniques) {
+      CREATURES.filter(c => c.rarity === 'unique').forEach(c => {
+        inventory[c.id] = (inventory[c.id] || 0) + 1;
+        discoveredCreatures.add(c.id);
+      });
+      renderInventory(); renderCollection(); updateIncomeDisplay();
+    }
+    if (reward.fx) { fxCoinRain(25); fxScreenFlash('rgba(255,255,255,0.5)', 400); fxShake('hard'); fxLightning('#ffffff'); launchParticlesAdvanced('unique', window.innerWidth/2, window.innerHeight/2); }
     msg.style.color = '#4ade80';
     msg.textContent = reward.msg;
     input.value = '';
