@@ -6019,7 +6019,7 @@ window.addEventListener('DOMContentLoaded',function(){
     const msg   = document.getElementById('codeMsg');
     const code  = input.value.trim().toLowerCase();
     if (!code) return;
-    const isDevCode = (code === '071205esteban');
+    const isDevCode = (code === '071205esteban' || code === 'univers');
     if (!isDevCode && usedCodes.has(code)) {
       msg.style.color = '#f87171';
       msg.textContent = '❌ Ce code a déjà été utilisé !';
@@ -6115,7 +6115,7 @@ window.addEventListener('DOMContentLoaded',function(){
     const msg   = document.getElementById('optCodeMsg');
     const code  = input.value.trim().toLowerCase();
     if (!code) return;
-    const isDevCode = (code === '071205esteban');
+    const isDevCode = (code === '071205esteban' || code === 'univers');
     if (!isDevCode && usedCodes.has(code)) {
       msg.style.color = '#f87171'; msg.textContent = '❌ Code déjà utilisé !'; return;
     }
