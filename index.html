@@ -6042,8 +6042,8 @@ document.getElementById('howToClose').addEventListener('click', () => {
     <p class="save-info">Ta progression est enregistrée automatiquement dans le navigateur.<br>Exporte-la pour la sécuriser ou la transférer.</p>
 
     <button class="save-btn export" id="exportSaveBtn">⬇️ Exporter ma sauvegarde (.json)</button>
-    <button class="save-btn import" id="importSaveBtn">⬆️ Importer une sauvegarde</button>
-    <input type="file" id="importFileInput" accept=".json">
+    <label for="importFileInput" class="save-btn import" style="cursor:pointer;display:block;text-align:center;">⬆️ Importer une sauvegarde</label>
+    <input type="file" id="importFileInput" accept=".json,.txt,application/json,text/*" style="display:none">
 
     <hr class="save-divider">
     <p style="font-size:0.72rem;color:var(--text2);margin-bottom:10px;">⚠️ L'importation <b>remplace</b> ta sauvegarde actuelle.</p>
