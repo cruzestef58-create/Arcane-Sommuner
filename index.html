@@ -2293,17 +2293,34 @@ function roll(rates){const r=Math.random()*100;let c=0;for(const[k,v]of Object.e
 function applyPrestigeRates(rates) {
   if (!prestigeLevel) return { ...rates };
   const r = { ...rates };
-  // Par étoile : -2% common, -1% rare, +1.5% epic, +1% legendary, +0.3% mythic, +0.2% cosmique
-  const shift = prestigeLevel;
-  const take = Math.min(r.common || 0, 2 * shift);
-  const takeR = Math.min(r.rare || 0, 1 * shift);
+  const lv = prestigeLevel;
+
+  // Étape 1 : vider common et rare comme avant
+  const take  = Math.min(r.common || 0, 3 * lv);
+  const takeR = Math.min(r.rare   || 0, 2 * lv);
   r.common = Math.max(0, (r.common || 0) - take);
   r.rare   = Math.max(0, (r.rare   || 0) - takeR);
-  r.epic        = (r.epic        || 0) + take * 0.48 + takeR * 0.38;
-  r.legendary   = (r.legendary   || 0) + take * 0.28 + takeR * 0.33;
-  r.mythic      = (r.mythic      || 0) + take * 0.13 + takeR * 0.15;
-  r.cosmique    = (r.cosmique    !== undefined) ? r.cosmique + take * 0.07 + takeR * 0.09 : r.cosmique;
-  r.unique      = (r.unique      !== undefined) ? r.unique  + take * 0.04 + takeR * 0.05 : r.unique;
+
+  // Étape 2 : bonus FLAT par niveau (prélevé sur epic)
+  // +2% leg, +1% mythic, +0.4% cosmique, +0.1% unique par étoile
+  const bonusLeg  = lv * 2.0;
+  const bonusMyth = lv * 1.0;
+  const bonusCosm = lv * 0.4;
+  const bonusUniq = lv * 0.1;
+  const totalBonus = bonusLeg + bonusMyth
+    + (r.cosmique !== undefined ? bonusCosm : 0)
+    + (r.unique   !== undefined ? bonusUniq : 0);
+
+  // Piocher dans epic d'abord, puis legendary pour couvrir le bonus
+  const takeE = Math.min(r.epic || 0, totalBonus);
+  r.epic = Math.max(0, (r.epic || 0) - takeE);
+
+  // Redistribuer le common/rare + ajouter les bonus flat
+  r.epic        = (r.epic        || 0) + take * 0.45 + takeR * 0.30;
+  r.legendary   = (r.legendary   || 0) + take * 0.30 + takeR * 0.35 + bonusLeg;
+  r.mythic      = (r.mythic      || 0) + take * 0.15 + takeR * 0.20 + bonusMyth;
+  r.cosmique    = (r.cosmique    !== undefined) ? r.cosmique + take * 0.07 + takeR * 0.10 + bonusCosm : r.cosmique;
+  r.unique      = (r.unique      !== undefined) ? r.unique   + take * 0.03 + takeR * 0.05 + bonusUniq : r.unique;
   return r;
 }
 function pickRandom(rarity){
