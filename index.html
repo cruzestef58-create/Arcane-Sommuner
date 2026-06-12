@@ -5745,13 +5745,14 @@ document.getElementById('importFileInput').addEventListener('change', e => {
   const reader = new FileReader();
   reader.onload = ev => {
     try {
-      const parsed = JSON.parse(ev.target.result);
-      if (!parsed || typeof parsed !== 'object') throw new Error('Format invalide');
-      localStorage.setItem(SAVE_KEY, ev.target.result);
+      const raw = ev.target.result;
+      const parsed = JSON.parse(raw.trim());
+      localStorage.setItem(SAVE_KEY, JSON.stringify(parsed));
       toast('✅ Sauvegarde importée ! Rechargement...');
       setTimeout(() => location.reload(), 800);
     } catch(err) {
-      toast('❌ Fichier invalide ou corrompu : ' + err.message);
+      toast('❌ Erreur : ' + err.message);
+      console.error('Import error:', err);
     }
   };
   reader.readAsText(file);
