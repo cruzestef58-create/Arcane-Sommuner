@@ -3670,8 +3670,8 @@ function renderInventory(){
   RARITY_ORDER.forEach(r => { groups[r] = []; });
   filtered.forEach(e => { if(groups[e.c.rarity]) groups[e.c.rarity].push(e); });
 
-  const RARITY_LABELS = { common:'Communs', rare:'Rares', epic:'Épiques', legendary:'Légendaires', mythic:'Mythiques', unique:'Unique' };
-  const RARITY_ICONS  = { common:'⬜', rare:'🔵', epic:'🟣', legendary:'🟡', mythic:'🩷', unique:'✦' };
+  const RARITY_LABELS = { common:'Communs', rare:'Rares', epic:'Épiques', legendary:'Légendaires', mythic:'Mythiques', cosmique:'Cosmiques', unique:'Unique' };
+  const RARITY_ICONS  = { common:'⬜', rare:'🔵', epic:'🟣', legendary:'🟡', mythic:'🩷', cosmique:'🩵', unique:'✦' };
 
   let html_out = '';
 
@@ -3692,7 +3692,7 @@ function renderInventory(){
     const group = groups[rarity].filter(e => !exCreatures[e.c.id]); // exclure les EX
     if (!group.length) return;
     // Total income for this rarity group
-    const groupIncome = group.reduce((sum, e) => sum + getCreatureIncomeSec(e.id, e.qty), 0);
+    const groupIncome = group.reduce((sum, e) => sum + getCreatureIncomeSec(e.c.id, e.qty), 0);
     const incStr = groupIncome >= 1 ? groupIncome.toFixed(1) + '/sec' : (groupIncome * 60).toFixed(1) + '/min';
     html_out += `<div class="inv-rarity-header rh-${rarity}" style="grid-column:1/-1">
       <span>${RARITY_ICONS[rarity]} ${RARITY_LABELS[rarity]} (${group.length} type${group.length>1?'s':''})</span>
