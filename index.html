@@ -3584,7 +3584,7 @@ function updateCollBadges() {
 
 function renderInvCard(c, qty) {
   const incSec = getCreatureIncomeSec(c.id, qty);
-  const incLabel = incSec >= 0.01 ? incSec.toFixed(3)+'/sec' : '<0.01/sec';
+  const incLabel = incSec >= 1 ? incSec.toFixed(1)+'/sec' : incSec >= 0.01 ? incSec.toFixed(2)+'/sec' : '<0.01/sec';
   const EQ_SELL_VALUES = { common:120, rare:360, epic:800, legendary:2000, mythic:15000, cosmique:75000, unique:200000 };
   const eq = creatureEquipment[c.id] ? EQUIPMENT.find(e=>e.id===creatureEquipment[c.id]) : null;
   const sellLabel = eq
