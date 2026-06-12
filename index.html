@@ -2297,10 +2297,11 @@ function applyPrestigeRates(rates) {
   const takeR = Math.min(r.rare || 0, 1 * shift);
   r.common = Math.max(0, (r.common || 0) - take);
   r.rare   = Math.max(0, (r.rare   || 0) - takeR);
-  r.epic        = (r.epic        || 0) + take * 0.5 + takeR * 0.4;
-  r.legendary   = (r.legendary   || 0) + take * 0.3 + takeR * 0.35;
+  r.epic        = (r.epic        || 0) + take * 0.48 + takeR * 0.38;
+  r.legendary   = (r.legendary   || 0) + take * 0.28 + takeR * 0.33;
   r.mythic      = (r.mythic      || 0) + take * 0.13 + takeR * 0.15;
-  r.cosmique    = (r.cosmique    !== undefined) ? r.cosmique + take * 0.07 + takeR * 0.1 : r.cosmique;
+  r.cosmique    = (r.cosmique    !== undefined) ? r.cosmique + take * 0.07 + takeR * 0.09 : r.cosmique;
+  r.unique      = (r.unique      !== undefined) ? r.unique  + take * 0.04 + takeR * 0.05 : r.unique;
   return r;
 }
 function pickRandom(rarity){
@@ -5467,10 +5468,12 @@ function openBuyerModal(creature, source) {
   document.getElementById('buyerCreatureName').textContent = creature.name;
   document.getElementById('buyerBasePrice').textContent = creature.sell.toLocaleString('fr-FR');
 
-  // Pick 3 random distinct buyers
-  const shuffled = [...ALL_BUYERS].sort(() => Math.random() - 0.5);
-  // Always include one bad + one good to make it interesting
-  const selected = shuffled.slice(0, 3);
+  // Pick 3 random distinct buyers — verrouillés pour cette créature (pas de re-roll en fermant)
+  if (!pendingSale.buyers) {
+    const shuffled = [...ALL_BUYERS].sort(() => Math.random() - 0.5);
+    pendingSale.buyers = shuffled.slice(0, 3);
+  }
+  const selected = pendingSale.buyers;
 
   // Show equip banner
   const _equipBanner = document.getElementById('buyerEquipBanner');
