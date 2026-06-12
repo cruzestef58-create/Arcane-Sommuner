@@ -751,7 +751,7 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
 .wheel-section{margin-bottom:28px;}
 .wheel-section h3{font-size:1rem;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
 .wheel-wrapper{display:flex;flex-direction:column;align-items:center;gap:14px;}
-.wheel-outer{position:relative;width:280px;height:280px;}
+.wheel-outer{position:relative;width:min(82vw,460px);height:min(82vw,460px);}
 .wheel-pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:1.6rem;z-index:10;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));line-height:1;}
 #wheelCanvas{border-radius:50%;box-shadow:0 0 30px rgba(168,85,247,0.3),0 0 60px rgba(168,85,247,0.1);display:block;}
 .btn-spin{padding:13px 36px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-weight:900;font-size:1rem;border:none;border-radius:14px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 20px rgba(168,85,247,0.4);}
@@ -1925,7 +1925,7 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <div class="wheel-wrapper">
       <div class="wheel-outer">
         <div class="wheel-pointer">▼</div>
-        <canvas id="wheelCanvas" width="280" height="280"></canvas>
+        <canvas id="wheelCanvas" width="460" height="460"></canvas>
       </div>
       <button class="btn-spin" id="btnSpinWheel">🎡 Tourner la roue !</button>
       <div class="wheel-timer" id="wheelTimerLabel"></div>
@@ -4600,10 +4600,11 @@ function drawWheel(angle) {
   const canvas = document.getElementById('wheelCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  const cx = 140, cy = 140, r = 130;
+  const size = canvas.width;
+  const cx = size / 2, cy = size / 2, r = size / 2 - 10;
   const n = WHEEL_PRIZES.length;
   const arc = (2 * Math.PI) / n;
-  ctx.clearRect(0, 0, 280, 280);
+  ctx.clearRect(0, 0, size, size);
   WHEEL_PRIZES.forEach((prize, i) => {
     const start = angle + i * arc - Math.PI / 2;
     const end = start + arc;
@@ -4622,15 +4623,16 @@ function drawWheel(angle) {
     ctx.rotate(start + arc / 2);
     ctx.textAlign = 'right';
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 13px sans-serif';
+    ctx.font = `bold ${Math.round(size * 0.033)}px sans-serif`;
     ctx.shadowColor = 'rgba(0,0,0,0.7)';
     ctx.shadowBlur = 4;
     ctx.fillText(prize.label, r - 8, 5);
     ctx.restore();
   });
   // center circle
+  const cr = size * 0.075;
   ctx.beginPath();
-  ctx.arc(cx, cy, 22, 0, 2 * Math.PI);
+  ctx.arc(cx, cy, cr, 0, 2 * Math.PI);
   ctx.fillStyle = '#0f0a1e';
   ctx.fill();
   ctx.strokeStyle = 'rgba(168,85,247,0.6)';
