@@ -3522,8 +3522,7 @@ function openExEvolveModal(creatureId) {
   const onConfirm = () => {
     btn.removeEventListener('click', onConfirm);
     ov.classList.remove('active');
-    // Consommer les copies (garde 1 dans l'inventaire)
-    inventory[c.id] = Math.max(1, (inventory[c.id] || 0) - EX_COST + 1);
+    // Les copies restent, EX est juste un bonus débloqué
     exCreatures[c.id] = true;
     lastFusedResultId = c.id;
     updateIncomeDisplay();
@@ -5512,7 +5511,7 @@ function getTotalIncome() {
   let total = 0;
   for (const [id, qty] of Object.entries(inventory)) {
     const c = CREATURES.find(x => x.id === id);
-    if (c) total += INCOME_RATE[c.rarity] * qty * getLevelMult(id) * getSetIncMult(c.rarity) * (1 + getEquipIncBonus(id) + getFamilyIncBonus(id));
+    if (c) total += INCOME_RATE[c.rarity] * qty * getLevelMult(id) * getSetIncMult(c.rarity) * (1 + getEquipIncBonus(id) + getFamilyIncBonus(id) + getExIncomeBonus(id));
   }
   if (hasBuff('income2x')) total *= 2;
   return total * getPrestigeIncomeMultiplier();
