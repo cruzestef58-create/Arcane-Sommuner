@@ -5736,7 +5736,7 @@ document.getElementById('importFileInput').addEventListener('change', e => {
   reader.onload = ev => {
     try {
       const parsed = JSON.parse(ev.target.result);
-      if (!parsed.version) throw new Error('Format invalide');
+      if (!parsed.v && !parsed.version) throw new Error('Format invalide');
       if (!confirm('Remplacer ta sauvegarde actuelle par ce fichier ?')) return;
       localStorage.setItem(SAVE_KEY, ev.target.result);
       toast('✅ Sauvegarde importée ! Rechargement...');
