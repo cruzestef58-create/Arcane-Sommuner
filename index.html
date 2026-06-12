@@ -1628,6 +1628,7 @@ header{background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-bottom:1px soli
     <div class="tax-wrap free" id="taxWrap" style="display:none">
       🏛️ <span id="taxDisplay">0</span><span>/min</span>
     </div>
+    <button id="musicToggleBtn" onclick="toggleMusic()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0;border-radius:8px;padding:6px 10px;font-size:0.95rem;cursor:pointer;font-weight:800;white-space:nowrap;">🎵</button>
     <button id="soundToggleBtn" onclick="toggleSound()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0;border-radius:8px;padding:6px 10px;font-size:0.95rem;cursor:pointer;font-weight:800;white-space:nowrap;">🔊</button>
     <button id="optionsBtn" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0;border-radius:8px;padding:6px 14px;font-size:0.85rem;cursor:pointer;font-weight:800;white-space:nowrap;">⚙️ Options</button>
     <button id="prestigeBtn3" style="background:linear-gradient(135deg,rgba(124,58,237,0.25),rgba(219,39,119,0.2));border:1px solid rgba(167,139,250,0.45);color:#c4b5fd;border-radius:8px;padding:6px 12px;font-size:0.85rem;cursor:pointer;font-weight:800;white-space:nowrap;">✨ <span id="headerPrestigeBadge">Renaissance</span></button>
@@ -6312,12 +6313,196 @@ document.getElementById('howToClose').addEventListener('click', () => {
 // ── SOUND SYSTEM ──
 let audioCtx = null;
 let soundEnabled = true;
+let musicEnabled = true;
+let bgMusic = null;
 
 function getAudioCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
+
+// ── MUSIQUE DE FOND ──
+function startBgMusic() {
+  if (bgMusic || !musicEnabled) return;
+  try {
+    const ctx = getAudioCtx();
+    const stopped = { v: false };
+    bgMusic = { stopped };
+
+    // Master gain (fade-in)
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0.22, ctx.currentTime + 4);
+    master.connect(ctx.destination);
+    bgMusic.master = master;
+
+    // Delay effect pour la profondeur
+    const delay = ctx.createDelay(1.0);
+    delay.delayTime.value = 0.4;
+    const delayFb = ctx.createGain(); delayFb.gain.value = 0.3;
+    const delayOut = ctx.createGain(); delayOut.gain.value = 0.22;
+    delay.connect(delayFb); delayFb.connect(delay);
+    delay.connect(delayOut); delayOut.connect(master);
+
+    // Filtre passe-bas pour adoucir le tout
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass'; filter.frequency.value = 2200; filter.Q.value = 0.7;
+    filter.connect(master);
+
+    // Basse : A1 (55 Hz) oscillation lente
+    const bass = ctx.createOscillator();
+    bass.type = 'sine'; bass.frequency.value = 55;
+    const bassGain = ctx.createGain(); bassGain.gain.value = 0.35;
+    bass.connect(bassGain); bassGain.connect(master); bass.start();
+    bgMusic.bass = bass;
+
+    // Pad Am (A2 C3 E3 A3 C4 E4) — plusieurs oscis légèrement désaccordées
+    const padFreqs = [110, 130.8, 164.8, 220, 261.6, 329.6];
+    const padNodes = padFreqs.map((freq, i) => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq * (1 + (i % 2 === 0 ? 0.0015 : -0.0015));
+      const g = ctx.createGain(); g.gain.value = 0.045;
+      // Vibrato lent
+      const lfo = ctx.createOscillator(); lfo.frequency.value = 0.25 + i * 0.04;
+      const lfoG = ctx.createGain(); lfoG.gain.value = 0.8;
+      lfo.connect(lfoG); lfoG.connect(osc.frequency); lfo.start();
+      osc.connect(g); g.connect(filter); osc.start();
+      return { osc, lfo };
+    });
+    bgMusic.padNodes = padNodes;
+
+    // Mélodie : La mineur pentatonique (A C D E G)
+    // A3=220  C4=261.6  D4=293.7  E4=329.6  G4=392  A4=440  E5=659
+    const BPM = 72;
+    const B = 60 / BPM; // durée d'un beat
+
+    const melody = [
+      // Phrase 1 (bars 1-2)
+      {n:220,  dur:2,   beat:0},
+      {n:261.6,dur:0.75,beat:2.25},
+      {n:293.7,dur:0.75,beat:3.25},
+      // Phrase 2 (bars 3-4)
+      {n:329.6,dur:1.5, beat:4},
+      {n:293.7,dur:0.5, beat:5.75},
+      {n:261.6,dur:2,   beat:6.25},
+      // Phrase 3 (bars 5-6)
+      {n:392,  dur:1,   beat:8},
+      {n:329.6,dur:0.75,beat:9.25},
+      {n:293.7,dur:0.75,beat:10.25},
+      // Phrase 4 (bars 7-8)
+      {n:329.6,dur:1,   beat:11},
+      {n:261.6,dur:1,   beat:12.25},
+      {n:220,  dur:2.5, beat:13.5},
+      // Phrase 5 (bars 9-10) — montée
+      {n:261.6,dur:0.5, beat:16},
+      {n:329.6,dur:0.5, beat:16.75},
+      {n:440,  dur:2,   beat:17.5},
+      {n:392,  dur:1.5, beat:19.75},
+      // Phrase 6 (bars 11-12) — descente
+      {n:329.6,dur:0.75,beat:21.5},
+      {n:293.7,dur:0.75,beat:22.5},
+      {n:261.6,dur:0.75,beat:23.5},
+      {n:220,  dur:3,   beat:24.5},
+    ];
+    const LOOP_BEATS = 28;
+
+    function scheduleMelody(startTime) {
+      if (stopped.v) return;
+      melody.forEach(note => {
+        const t = startTime + note.beat * B;
+        const osc = ctx.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.value = note.n;
+        const g = ctx.createGain();
+        const dur = note.dur * B;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.13, t + 0.03);
+        g.gain.setValueAtTime(0.13, t + dur * 0.65);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.92);
+        osc.connect(g);
+        g.connect(delay);
+        g.connect(filter);
+        osc.start(t); osc.stop(t + dur + 0.05);
+      });
+      const loopDur = LOOP_BEATS * B * 1000;
+      setTimeout(() => scheduleMelody(startTime + LOOP_BEATS * B), loopDur - 800);
+    }
+
+    // Contre-mélodie grave (octave en dessous, discrète)
+    function scheduleCounterMelody(startTime) {
+      if (stopped.v) return;
+      const counter = [
+        {n:110, dur:4, beat:0}, {n:130.8, dur:4, beat:4},
+        {n:110, dur:4, beat:8}, {n:146.8, dur:4, beat:12},
+        {n:110, dur:4, beat:16},{n:130.8, dur:4, beat:20},
+        {n:110, dur:8, beat:24},
+      ];
+      counter.forEach(note => {
+        const t = startTime + note.beat * B;
+        const osc = ctx.createOscillator();
+        osc.type = 'sine'; osc.frequency.value = note.n;
+        const g = ctx.createGain();
+        const dur = note.dur * B;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.07, t + 0.1);
+        g.gain.setValueAtTime(0.07, t + dur * 0.8);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.98);
+        osc.connect(g); g.connect(master);
+        osc.start(t); osc.stop(t + dur + 0.1);
+      });
+      const loopDur = LOOP_BEATS * B * 1000;
+      setTimeout(() => scheduleCounterMelody(startTime + LOOP_BEATS * B), loopDur - 800);
+    }
+
+    scheduleMelody(ctx.currentTime + 2);
+    scheduleCounterMelody(ctx.currentTime + 2);
+  } catch(e) {}
+}
+
+function stopBgMusic() {
+  if (!bgMusic) return;
+  bgMusic.stopped.v = true;
+  try {
+    const { master, bass, padNodes } = bgMusic;
+    const ctx = getAudioCtx();
+    master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5);
+    setTimeout(() => {
+      try { bass.stop(); } catch(e) {}
+      padNodes.forEach(p => { try { p.osc.stop(); p.lfo.stop(); } catch(e) {} });
+    }, 1600);
+  } catch(e) {}
+  bgMusic = null;
+}
+
+function toggleMusic() {
+  musicEnabled = !musicEnabled;
+  localStorage.setItem('arcane_music', musicEnabled ? '1' : '0');
+  const btn = document.getElementById('musicToggleBtn');
+  if (btn) btn.textContent = musicEnabled ? '🎵' : '🎵';
+  if (btn) btn.style.opacity = musicEnabled ? '1' : '0.4';
+  if (musicEnabled) startBgMusic(); else stopBgMusic();
+}
+
+// Lancer la musique au premier clic (politique autoplay navigateur)
+let musicStarted = false;
+function tryStartMusic() {
+  if (!musicStarted) { musicStarted = true; startBgMusic(); }
+}
+document.addEventListener('click', tryStartMusic, { once: true });
+document.addEventListener('touchstart', tryStartMusic, { once: true });
+
+// Charger préférence musique
+(function(){
+  const m = localStorage.getItem('arcane_music');
+  if (m === '0') { musicEnabled = false; }
+  window.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('musicToggleBtn');
+    if (btn && !musicEnabled) btn.style.opacity = '0.4';
+  });
+})();
 
 function playTone(freq, type, duration, volume=0.3, delay=0) {
   if (!soundEnabled) return;
