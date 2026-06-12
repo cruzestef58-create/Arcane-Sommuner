@@ -5516,10 +5516,11 @@ function collectTax(amount) {
     if (paid > 0) spawnTaxFloat(-paid);
     // Lose 1 creature (cheapest, any rarity) — only if above threshold
     const total = getTotalCreatureCount();
+    const RARITY_RANK = { common:0, rare:1, epic:2, legendary:3, mythic:4, cosmique:5, unique:6 };
     const candidates = Object.entries(inventory)
       .map(([id, qty]) => ({ c: CREATURES.find(x => x.id === id), qty }))
-      .filter(e => e.c && e.qty > 0)
-      .sort((a, b) => a.c.sell - b.c.sell);
+      .filter(e => e.c && e.qty > 0 && !exCreatures[e.c.id])
+      .sort((a, b) => (RARITY_RANK[a.c.rarity] ?? 0) - (RARITY_RANK[b.c.rarity] ?? 0) || a.c.sell - b.c.sell);
     if (candidates.length > 0 && total > TAX_FREE_THRESHOLD) {
       const victim = candidates[0].c;
       removeCreatureFromInventory(victim.id, 1);
